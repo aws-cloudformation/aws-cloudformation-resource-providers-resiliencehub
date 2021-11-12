@@ -1,0 +1,61 @@
+package com.amazonaws.resiliencehub.resiliencypolicy;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.Duration;
+
+import com.amazonaws.resiliencehub.common.AbstractTestBase;
+
+import software.amazon.awssdk.services.resiliencehub.ResiliencehubClient;
+import software.amazon.awssdk.services.resiliencehub.model.DeleteResiliencyPolicyRequest;
+import software.amazon.awssdk.services.resiliencehub.model.DeleteResiliencyPolicyResponse;
+import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
+import software.amazon.cloudformation.proxy.ProgressEvent;
+import software.amazon.cloudformation.proxy.ProxyClient;
+import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+public class DeleteHandlerTest extends AbstractTestBase {
+
+    @Mock
+    private ResiliencehubClient sdkClient;
+
+    @Mock
+    private ApiCallsWrapper apiCallsWrapper;
+
+    private AmazonWebServicesClientProxy proxy;
+    private ProxyClient<ResiliencehubClient> proxyClient;
+    private DeleteHandler handler;
+
+    @BeforeEach
+    public void setup() {
+        proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
+        proxyClient = MOCK_PROXY(proxy, sdkClient);
+        handler = new DeleteHandler(apiCallsWrapper);
+    }
+
+    @Test
+    public void handleRequest_SimpleSuccess() {
+        final ResourceModel model = TestDataProvider.getResourceModelWithResiliencyPolicyArn();
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+            .desiredResourceState(model)
+            .build();
+
+        final DeleteResiliencyPolicyRequest deleteResiliencyPolicyRequest = Translator.translateToDeleteRequest(model);
+        final DeleteResiliencyPolicyResponse deleteResiliencyPolicyResponse = DeleteResiliencyPolicyResponse.builder().build();
+
+        when(apiCallsWrapper.deleteResiliencyPolicy(eq(deleteResiliencyPolicyRequest), eq(proxyClient)))
+            .thenReturn(deleteResiliencyPolicyResponse);
+
+        assertThat(handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger))
+            .isEqualTo(ProgressEvent.defaultSuccessHandler(null));
+    }
+}
