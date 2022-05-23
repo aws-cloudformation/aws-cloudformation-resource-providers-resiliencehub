@@ -50,6 +50,7 @@ public class Translator {
         .name(model.getName())
         .description(model.getDescription())
         .policyArn(model.getResiliencyPolicyArn())
+        .assessmentSchedule(model.getAppAssessmentSchedule())
         .tags(model.getTags())
         .build();
   }
@@ -65,6 +66,7 @@ public class Translator {
         .appArn(model.getAppArn())
         .description(model.getDescription())
         .policyArn(model.getResiliencyPolicyArn())
+        .assessmentSchedule(model.getAppAssessmentSchedule())
         .build();
   }
 
@@ -94,6 +96,7 @@ public class Translator {
         .name(app.name())
         .description(app.description())
         .resiliencyPolicyArn(app.policyArn())
+        .appAssessmentSchedule(app.assessmentScheduleAsString())
         .tags(app.tags())
         .build();
   }

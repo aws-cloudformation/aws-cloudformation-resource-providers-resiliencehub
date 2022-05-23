@@ -5,6 +5,7 @@ import java.time.Instant;
 import com.google.common.collect.ImmutableMap;
 
 import software.amazon.awssdk.services.resiliencehub.model.App;
+import software.amazon.awssdk.services.resiliencehub.model.AppAssessmentScheduleType;
 import software.amazon.awssdk.services.resiliencehub.model.AppComplianceStatusType;
 import software.amazon.awssdk.services.resiliencehub.model.AppStatusType;
 import software.amazon.awssdk.services.resiliencehub.model.AppSummary;
@@ -49,6 +50,7 @@ public class TestDataProvider {
             .name(app.name())
             .description(app.description())
             .resiliencyPolicyArn(app.policyArn())
+            .appAssessmentSchedule(app.assessmentScheduleAsString())
             .tags(app.tags())
             .build();
     }
@@ -70,6 +72,7 @@ public class TestDataProvider {
             .name(APP_NAME)
             .description(APP_DESC)
             .policyArn(POLICY_ARN)
+            .assessmentSchedule(AppAssessmentScheduleType.DAILY)
             .tags(ImmutableMap.of("t1", "v1"))
             .build();
     }
@@ -92,6 +95,7 @@ public class TestDataProvider {
             .lastAppComplianceEvaluationTime(null)
             .resiliencyScore(null)
             .lastResiliencyScoreEvaluationTime(null)
+            .assessmentSchedule(AppAssessmentScheduleType.DAILY)
             .tags(request.tags())
             .build();
     }
