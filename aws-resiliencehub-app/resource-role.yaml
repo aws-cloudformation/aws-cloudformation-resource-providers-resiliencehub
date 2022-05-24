@@ -46,6 +46,8 @@ Resources:
                 - "resiliencehub:TagResource"
                 - "resiliencehub:UntagResource"
                 - "resiliencehub:UpdateApp"
+                - "s3:GetBucketLocation"
+                - "s3:GetObject"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

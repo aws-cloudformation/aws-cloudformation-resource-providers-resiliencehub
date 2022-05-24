@@ -24,6 +24,7 @@ public class TestDataProvider {
     public static final String APP_DESC = "appDesc";
     public static final String APP_TEMPLATE = "appTemplateBody";
     public static final String LOGICAL_STACK_NAME = "logicalStackName";
+    public static final String TERRAFORM_SOURCE_NAME = "stateFile.tf";
     public static final String RESOURCE_NAME = "resourceName";
     public static final String POLICY_ARN = "PolicyArn";
 
@@ -41,6 +42,14 @@ public class TestDataProvider {
         .physicalResourceId(PhysicalResourceId.builder()
             .type(PhysicalIdentifierType.NATIVE)
             .identifier("Identifier")
+            .build())
+        .build();
+    public static final ResourceMapping TERRAFORM_RESOURCE_MAPPING = ResourceMapping.builder()
+        .terraformSourceName(TERRAFORM_SOURCE_NAME)
+        .mappingType(ResourceMappingType.TERRAFORM)
+        .physicalResourceId(PhysicalResourceId.builder()
+            .type(PhysicalIdentifierType.NATIVE)
+            .identifier("s3://my-bucket/state.tf")
             .build())
         .build();
 

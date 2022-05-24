@@ -155,8 +155,7 @@ public class ApiCallsWrapperTest {
     @Test
     public void testAddDraftAppVersionResourceMappings_withResourceMappingsAsInput() {
         when(proxyClient.client()).thenReturn(resiliencehubClient);
-        final Set<software.amazon.awssdk.services.resiliencehub.model.ResourceMapping> resourceMappings = ImmutableSet
-            .of(TestDataProvider.CFN_BACKED_SDK_RESOURCE_MAPPING);
+        final Set<ResourceMapping> resourceMappings = ImmutableSet.of(TestDataProvider.CFN_BACKED_SDK_RESOURCE_MAPPING);
         final AddDraftAppVersionResourceMappingsRequest expectedRequest = AddDraftAppVersionResourceMappingsRequest
             .builder()
             .appArn(TestDataProvider.APP_ARN)
@@ -170,7 +169,7 @@ public class ApiCallsWrapperTest {
 
     @Test
     public void testAddDraftAppVersionResourceMappings_withEmptyResourceMappings() {
-        final Set<software.amazon.awssdk.services.resiliencehub.model.ResourceMapping> resourceMappings = ImmutableSet.of();
+        final Set<ResourceMapping> resourceMappings = ImmutableSet.of();
 
         apiCallsWrapper.addDraftAppVersionResourceMappings(TestDataProvider.APP_ARN, resourceMappings, proxyClient);
 
@@ -180,12 +179,15 @@ public class ApiCallsWrapperTest {
     @Test
     public void testRemoveDraftAppVersionResourceMappings() {
         when(proxyClient.client()).thenReturn(resiliencehubClient);
-        final Set<software.amazon.awssdk.services.resiliencehub.model.ResourceMapping> resourceMappings = ImmutableSet
-            .of(TestDataProvider.CFN_BACKED_SDK_RESOURCE_MAPPING, TestDataProvider.NATIVE_SDK_RESOURCE_MAPPING);
+        final Set<ResourceMapping> resourceMappings = ImmutableSet
+            .of(TestDataProvider.CFN_BACKED_SDK_RESOURCE_MAPPING,
+                TestDataProvider.NATIVE_SDK_RESOURCE_MAPPING,
+                TestDataProvider.TERRAFORM_RESOURCE_MAPPING);
         final RemoveDraftAppVersionResourceMappingsRequest expectedRequest = RemoveDraftAppVersionResourceMappingsRequest.builder()
             .appArn(TestDataProvider.APP_ARN)
             .logicalStackNames(TestDataProvider.CFN_BACKED_SDK_RESOURCE_MAPPING.logicalStackName())
             .resourceNames(TestDataProvider.RESOURCE_NAME)
+            .terraformSourceNames(TestDataProvider.TERRAFORM_SOURCE_NAME)
             .build();
 
         apiCallsWrapper.removeDraftAppVersionResourceMappings(TestDataProvider.APP_ARN, resourceMappings, proxyClient);
@@ -195,7 +197,7 @@ public class ApiCallsWrapperTest {
 
     @Test
     public void testRemoveDraftAppVersionResourceMappings_emptyResourceMappings() {
-        final Set<software.amazon.awssdk.services.resiliencehub.model.ResourceMapping> resourceMappings = ImmutableSet.of();
+        final Set<ResourceMapping> resourceMappings = ImmutableSet.of();
 
         apiCallsWrapper.removeDraftAppVersionResourceMappings(TestDataProvider.APP_ARN, resourceMappings, proxyClient);
 
@@ -241,7 +243,7 @@ public class ApiCallsWrapperTest {
         doReturn(resourceMappingsResponse).when(proxyClient)
             .injectCredentialsAndInvokeV2(any(ListAppVersionResourceMappingsRequest.class), any());
 
-        final Set<software.amazon.awssdk.services.resiliencehub.model.ResourceMapping> actualResourceMappings = apiCallsWrapper
+        final Set<ResourceMapping> actualResourceMappings = apiCallsWrapper
             .fetchAllResourceMappings(resourceMappingsRequest, proxyClient);
 
         assertTrue(CollectionUtils.isEqualCollection(resourceMappingsResponse.resourceMappings(), actualResourceMappings));
@@ -251,10 +253,8 @@ public class ApiCallsWrapperTest {
     @Test
     public void testFetchAllResourceMappings_MultiplePages() {
         when(proxyClient.client()).thenReturn(resiliencehubClient);
-        final software.amazon.awssdk.services.resiliencehub.model.ResourceMapping firstMapping = TestDataProvider
-            .generateResourceMapping(PHYSICAL_RESOURCE_IDENTIFIER_1);
-        final software.amazon.awssdk.services.resiliencehub.model.ResourceMapping secondMapping = TestDataProvider
-            .generateResourceMapping(PHYSICAL_RESOURCE_IDENTIFIER_2);
+        final ResourceMapping firstMapping = TestDataProvider.generateResourceMapping(PHYSICAL_RESOURCE_IDENTIFIER_1);
+        final ResourceMapping secondMapping = TestDataProvider.generateResourceMapping(PHYSICAL_RESOURCE_IDENTIFIER_2);
 
         // 1st page
         final ListAppVersionResourceMappingsRequest firstPageRequest = ListAppVersionResourceMappingsRequest.builder()
