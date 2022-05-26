@@ -13,6 +13,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#logicalstackname" title="LogicalStackName">LogicalStackName</a>" : <i>String</i>,
     "<a href="#mappingtype" title="MappingType">MappingType</a>" : <i>String</i>,
     "<a href="#resourcename" title="ResourceName">ResourceName</a>" : <i>String</i>,
+    "<a href="#terraformsourcename" title="TerraformSourceName">TerraformSourceName</a>" : <i>String</i>,
     "<a href="#physicalresourceid" title="PhysicalResourceId">PhysicalResourceId</a>" : <i><a href="physicalresourceid.md">PhysicalResourceId</a></i>
 }
 </pre>
@@ -23,6 +24,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#logicalstackname" title="LogicalStackName">LogicalStackName</a>: <i>String</i>
 <a href="#mappingtype" title="MappingType">MappingType</a>: <i>String</i>
 <a href="#resourcename" title="ResourceName">ResourceName</a>: <i>String</i>
+<a href="#terraformsourcename" title="TerraformSourceName">TerraformSourceName</a>: <i>String</i>
 <a href="#physicalresourceid" title="PhysicalResourceId">PhysicalResourceId</a>: <i><a href="physicalresourceid.md">PhysicalResourceId</a></i>
 </pre>
 
@@ -42,7 +44,7 @@ _Required_: Yes
 
 _Type_: String
 
-_Pattern_: <code>CfnStack|Resource</code>
+_Pattern_: <code>CfnStack|Resource|Terraform</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -53,6 +55,14 @@ _Required_: No
 _Type_: String
 
 _Pattern_: <code>^[A-Za-z0-9][A-Za-z0-9_\-]{1,59}$</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### TerraformSourceName
+
+_Required_: No
+
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

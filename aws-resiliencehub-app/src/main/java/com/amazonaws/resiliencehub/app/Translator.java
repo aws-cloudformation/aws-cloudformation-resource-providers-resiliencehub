@@ -50,6 +50,7 @@ public class Translator {
         .name(model.getName())
         .description(model.getDescription())
         .policyArn(model.getResiliencyPolicyArn())
+        .assessmentSchedule(model.getAppAssessmentSchedule())
         .tags(model.getTags())
         .build();
   }
@@ -65,6 +66,7 @@ public class Translator {
         .appArn(model.getAppArn())
         .description(model.getDescription())
         .policyArn(model.getResiliencyPolicyArn())
+        .assessmentSchedule(model.getAppAssessmentSchedule())
         .build();
   }
 
@@ -94,6 +96,7 @@ public class Translator {
         .name(app.name())
         .description(app.description())
         .resiliencyPolicyArn(app.policyArn())
+        .appAssessmentSchedule(app.assessmentScheduleAsString())
         .tags(app.tags())
         .build();
   }
@@ -211,19 +214,26 @@ public class Translator {
 
     final Set<String> logicalStackNames = Sets.newHashSet();
     final Set<String> resourceNames = Sets.newHashSet();
+    final Set<String> terraformSourceNames = Sets.newHashSet();
     for (final software.amazon.awssdk.services.resiliencehub.model.ResourceMapping resourceMapping : sdkResourceMappings) {
-      if (resourceMapping.mappingType().equals(ResourceMappingType.CFN_STACK)) {
-        logicalStackNames.add(resourceMapping.logicalStackName());
-      }
-      if (resourceMapping.mappingType().equals(ResourceMappingType.RESOURCE)) {
-        resourceNames.add(resourceMapping.resourceName());
-      }
+        switch (resourceMapping.mappingType()) {
+            case CFN_STACK:
+                logicalStackNames.add(resourceMapping.logicalStackName());
+                break;
+            case RESOURCE:
+                resourceNames.add(resourceMapping.resourceName());
+                break;
+            case TERRAFORM:
+                terraformSourceNames.add(resourceMapping.terraformSourceName());
+                break;
+        }
     }
 
     return RemoveDraftAppVersionResourceMappingsRequest.builder()
         .appArn(appArn)
         .logicalStackNames(logicalStackNames)
         .resourceNames(resourceNames)
+        .terraformSourceNames(terraformSourceNames)
         .build();
   }
 
@@ -314,6 +324,7 @@ public class Translator {
         .mappingType(ResourceMappingType.fromValue(cfnResourceMapping.getMappingType()))
         .physicalResourceId(toSdkPhysicalResourceId(cfnResourceMapping.getPhysicalResourceId()))
         .resourceName(cfnResourceMapping.getResourceName())
+        .terraformSourceName(cfnResourceMapping.getTerraformSourceName())
         .build();
   }
 
@@ -331,6 +342,7 @@ public class Translator {
       final software.amazon.awssdk.services.resiliencehub.model.ResourceMapping sdkResourceMapping) {
     return ResourceMapping.builder()
         .logicalStackName(sdkResourceMapping.logicalStackName())
+        .terraformSourceName(sdkResourceMapping.terraformSourceName())
         .mappingType(sdkResourceMapping.mappingType().toString())
         .physicalResourceId(toCfnPhysicalResourceId(sdkResourceMapping.physicalResourceId()))
         .resourceName(sdkResourceMapping.resourceName())

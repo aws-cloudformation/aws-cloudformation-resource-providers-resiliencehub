@@ -17,7 +17,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#resiliencypolicyarn" title="ResiliencyPolicyArn">ResiliencyPolicyArn</a>" : <i>String</i>,
         "<a href="#tags" title="Tags">Tags</a>" : <i><a href="tags.md">Tags</a></i>,
         "<a href="#apptemplatebody" title="AppTemplateBody">AppTemplateBody</a>" : <i>String</i>,
-        "<a href="#resourcemappings" title="ResourceMappings">ResourceMappings</a>" : <i>[ <a href="resourcemapping.md">ResourceMapping</a>, ... ]</i>
+        "<a href="#resourcemappings" title="ResourceMappings">ResourceMappings</a>" : <i>[ <a href="resourcemapping.md">ResourceMapping</a>, ... ]</i>,
+        "<a href="#appassessmentschedule" title="AppAssessmentSchedule">AppAssessmentSchedule</a>" : <i>String</i>
     }
 }
 </pre>
@@ -34,6 +35,7 @@ Properties:
     <a href="#apptemplatebody" title="AppTemplateBody">AppTemplateBody</a>: <i>String</i>
     <a href="#resourcemappings" title="ResourceMappings">ResourceMappings</a>: <i>
       - <a href="resourcemapping.md">ResourceMapping</a></i>
+    <a href="#appassessmentschedule" title="AppAssessmentSchedule">AppAssessmentSchedule</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -103,6 +105,18 @@ An array of ResourceMapping objects.
 _Required_: Yes
 
 _Type_: List of <a href="resourcemapping.md">ResourceMapping</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### AppAssessmentSchedule
+
+Assessment execution schedule.
+
+_Required_: No
+
+_Type_: String
+
+_Allowed Values_: <code>Disabled</code> | <code>Daily</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
