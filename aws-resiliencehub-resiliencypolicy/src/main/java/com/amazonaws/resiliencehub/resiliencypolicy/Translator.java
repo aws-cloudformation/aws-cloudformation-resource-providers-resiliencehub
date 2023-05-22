@@ -26,139 +26,139 @@ import software.amazon.awssdk.services.resiliencehub.model.UpdateResiliencyPolic
 
 public class Translator {
 
-  /**
-   * Request to create a resource
-   *
-   * @param model resource model
-   * @return awsRequest the aws service request to create a resource
-   */
-  static CreateResiliencyPolicyRequest translateToCreateRequest(final ResourceModel model) {
-    return CreateResiliencyPolicyRequest.builder()
-        .policyName(model.getPolicyName())
-        .policyDescription(model.getPolicyDescription())
-        .dataLocationConstraint(model.getDataLocationConstraint())
-        .tier(model.getTier())
-        .policy(fromResourceModel(model.getPolicy()))
-        .tags(model.getTags())
-        .build();
-  }
-
-  /**
-   * Request to read a resource
-   *
-   * @param model resource model
-   * @return awsRequest the aws service request to describe a resource
-   */
-  static DescribeResiliencyPolicyRequest translateToReadRequest(final ResourceModel model) {
-    return DescribeResiliencyPolicyRequest.builder()
-        .policyArn(model.getPolicyArn())
-        .build();
-  }
-
-  /**
-   * Translates resource object from sdk into a resource model
-   *
-   * @param awsResponse the aws service describe resource response
-   * @return model resource model
-   */
-  static ResourceModel translateFromReadResponse(final DescribeResiliencyPolicyResponse awsResponse) {
-    // e.g. https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs/blob/2077c92299aeb9a68ae8f4418b5e932b12a8b186/aws-logs-loggroup/src/main/java/com/aws/logs/loggroup/Translator.java#L58-L73
-    return ResourceModel.builder()
-        .policyName(awsResponse.policy().policyName())
-        .policyDescription(awsResponse.policy().policyDescription())
-        .policyArn(awsResponse.policy().policyArn())
-        .dataLocationConstraint(awsResponse.policy().dataLocationConstraintAsString())
-        .tier(awsResponse.policy().tierAsString())
-        .policy(toResourceModel(awsResponse.policy().policy()))
-        .tags(awsResponse.policy().tags())
-        .build();
-  }
-
-  /**
-   * Request to delete a resource
-   *
-   * @param model resource model
-   * @return awsRequest the aws service request to delete a resource
-   */
-  static DeleteResiliencyPolicyRequest translateToDeleteRequest(final ResourceModel model) {
-    return DeleteResiliencyPolicyRequest.builder()
-        .policyArn(model.getPolicyArn())
-        .build();
-  }
-
-  /**
-   * Request to update properties of a previously created resource
-   *
-   * @param model resource model
-   * @return awsRequest the aws service request to modify a resource
-   */
-  static UpdateResiliencyPolicyRequest translateToUpdateRequest(final ResourceModel model) {
-    return UpdateResiliencyPolicyRequest.builder()
-        .policyArn(model.getPolicyArn())
-        .policyName(model.getPolicyName())
-        .policyDescription(model.getPolicyDescription())
-        .dataLocationConstraint(model.getDataLocationConstraint())
-        .tier(model.getTier())
-        .policy(fromResourceModel(model.getPolicy()))
-        .build();
-  }
-
-  /**
-   * Request to list resources
-   *
-   * @param nextToken token passed to the aws service list resources request
-   * @return awsRequest the aws service request to list resources within aws account
-   */
-  static ListResiliencyPoliciesRequest translateToListRequest(final String nextToken) {
-    return ListResiliencyPoliciesRequest.builder()
-        .nextToken(nextToken)
-        .build();
-  }
-
-  /**
-   * Translates resource objects from sdk into a resource model (primary identifier only)
-   *
-   * @param awsResponse the aws service describe resource response
-   * @return list of resource models
-   */
-  static List<ResourceModel> translateFromListResponse(final ListResiliencyPoliciesResponse awsResponse) {
-    // e.g. https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs/blob/2077c92299aeb9a68ae8f4418b5e932b12a8b186/aws-logs-loggroup/src/main/java/com/aws/logs/loggroup/Translator.java#L75-L82
-    return streamOfOrEmpty(awsResponse.resiliencyPolicies())
-        .map(resource -> ResourceModel.builder()
-            // include only primary identifier
-            .policyArn(resource.policyArn())
-            .build())
-        .collect(Collectors.toList());
-  }
-
-  private static <T> Stream<T> streamOfOrEmpty(final Collection<T> collection) {
-    return Optional.ofNullable(collection)
-        .map(Collection::stream)
-        .orElseGet(Stream::empty);
-  }
-
-  static Map<DisruptionType, software.amazon.awssdk.services.resiliencehub.model.FailurePolicy> fromResourceModel(
-      final Map<String, FailurePolicy> policy) {
-    final Map<DisruptionType, software.amazon.awssdk.services.resiliencehub.model.FailurePolicy> policyMap = new HashMap<>();
-
-    for (final String key : policy.keySet()) {
-      policyMap.put(DisruptionType.fromValue(key), software.amazon.awssdk.services.resiliencehub.model.FailurePolicy.builder()
-          .rpoInSecs(policy.get(key).getRpoInSecs())
-          .rtoInSecs(policy.get(key).getRtoInSecs())
-          .build());
+    /**
+     * Request to create a resource
+     *
+     * @param model resource model
+     * @return awsRequest the aws service request to create a resource
+     */
+    static CreateResiliencyPolicyRequest translateToCreateRequest(final ResourceModel model) {
+        return CreateResiliencyPolicyRequest.builder()
+            .policyName(model.getPolicyName())
+            .policyDescription(model.getPolicyDescription())
+            .dataLocationConstraint(model.getDataLocationConstraint())
+            .tier(model.getTier())
+            .policy(fromResourceModel(model.getPolicy()))
+            .tags(model.getTags())
+            .build();
     }
-    return policyMap;
-  }
 
-  static Map<String, FailurePolicy> toResourceModel(
-      final Map<DisruptionType, software.amazon.awssdk.services.resiliencehub.model.FailurePolicy> policy) {
-    final Map<String, FailurePolicy> policyMap = new HashMap<>();
-    for (final DisruptionType key : policy.keySet()) {
-      policyMap.put(key.toString(), FailurePolicy.builder()
-          .rpoInSecs(policy.get(key).rpoInSecs())
-          .rtoInSecs(policy.get(key).rtoInSecs())
-          .build());
+    /**
+     * Request to read a resource
+     *
+     * @param model resource model
+     * @return awsRequest the aws service request to describe a resource
+     */
+    static DescribeResiliencyPolicyRequest translateToReadRequest(final ResourceModel model) {
+        return DescribeResiliencyPolicyRequest.builder()
+            .policyArn(model.getPolicyArn())
+            .build();
     }
-    return policyMap;
-  }
+
+    /**
+     * Translates resource object from sdk into a resource model
+     *
+     * @param awsResponse the aws service describe resource response
+     * @return model resource model
+     */
+    static ResourceModel translateFromReadResponse(final DescribeResiliencyPolicyResponse awsResponse) {
+        // e.g. https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs/blob/2077c92299aeb9a68ae8f4418b5e932b12a8b186/aws-logs-loggroup/src/main/java/com/aws/logs/loggroup/Translator.java#L58-L73
+        return ResourceModel.builder()
+            .policyName(awsResponse.policy().policyName())
+            .policyDescription(awsResponse.policy().policyDescription())
+            .policyArn(awsResponse.policy().policyArn())
+            .dataLocationConstraint(awsResponse.policy().dataLocationConstraintAsString())
+            .tier(awsResponse.policy().tierAsString())
+            .policy(toResourceModel(awsResponse.policy().policy()))
+            .tags(awsResponse.policy().tags())
+            .build();
+    }
+
+    /**
+     * Request to delete a resource
+     *
+     * @param model resource model
+     * @return awsRequest the aws service request to delete a resource
+     */
+    static DeleteResiliencyPolicyRequest translateToDeleteRequest(final ResourceModel model) {
+        return DeleteResiliencyPolicyRequest.builder()
+            .policyArn(model.getPolicyArn())
+            .build();
+    }
+
+    /**
+     * Request to update properties of a previously created resource
+     *
+     * @param model resource model
+     * @return awsRequest the aws service request to modify a resource
+     */
+    static UpdateResiliencyPolicyRequest translateToUpdateRequest(final ResourceModel model) {
+        return UpdateResiliencyPolicyRequest.builder()
+            .policyArn(model.getPolicyArn())
+            .policyName(model.getPolicyName())
+            .policyDescription(model.getPolicyDescription())
+            .dataLocationConstraint(model.getDataLocationConstraint())
+            .tier(model.getTier())
+            .policy(fromResourceModel(model.getPolicy()))
+            .build();
+    }
+
+    /**
+     * Request to list resources
+     *
+     * @param nextToken token passed to the aws service list resources request
+     * @return awsRequest the aws service request to list resources within aws account
+     */
+    static ListResiliencyPoliciesRequest translateToListRequest(final String nextToken) {
+        return ListResiliencyPoliciesRequest.builder()
+            .nextToken(nextToken)
+            .build();
+    }
+
+    /**
+     * Translates resource objects from sdk into a resource model (primary identifier only)
+     *
+     * @param awsResponse the aws service describe resource response
+     * @return list of resource models
+     */
+    static List<ResourceModel> translateFromListResponse(final ListResiliencyPoliciesResponse awsResponse) {
+        // e.g. https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs/blob/2077c92299aeb9a68ae8f4418b5e932b12a8b186/aws-logs-loggroup/src/main/java/com/aws/logs/loggroup/Translator.java#L75-L82
+        return streamOfOrEmpty(awsResponse.resiliencyPolicies())
+            .map(resource -> ResourceModel.builder()
+                // include only primary identifier
+                .policyArn(resource.policyArn())
+                .build())
+            .collect(Collectors.toList());
+    }
+
+    private static <T> Stream<T> streamOfOrEmpty(final Collection<T> collection) {
+        return Optional.ofNullable(collection)
+            .map(Collection::stream)
+            .orElseGet(Stream::empty);
+    }
+
+    static Map<DisruptionType, software.amazon.awssdk.services.resiliencehub.model.FailurePolicy> fromResourceModel(
+        final Map<String, FailurePolicy> policy) {
+        final Map<DisruptionType, software.amazon.awssdk.services.resiliencehub.model.FailurePolicy> policyMap = new HashMap<>();
+
+        for (final String key : policy.keySet()) {
+            policyMap.put(DisruptionType.fromValue(key), software.amazon.awssdk.services.resiliencehub.model.FailurePolicy.builder()
+                .rpoInSecs(policy.get(key).getRpoInSecs())
+                .rtoInSecs(policy.get(key).getRtoInSecs())
+                .build());
+        }
+        return policyMap;
+    }
+
+    static Map<String, FailurePolicy> toResourceModel(
+        final Map<DisruptionType, software.amazon.awssdk.services.resiliencehub.model.FailurePolicy> policy) {
+        final Map<String, FailurePolicy> policyMap = new HashMap<>();
+        for (final DisruptionType key : policy.keySet()) {
+            policyMap.put(key.toString(), FailurePolicy.builder()
+                .rpoInSecs(policy.get(key).rpoInSecs())
+                .rtoInSecs(policy.get(key).rtoInSecs())
+                .build());
+        }
+        return policyMap;
+    }
 }

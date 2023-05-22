@@ -15,37 +15,37 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 public abstract class BaseHandlerStd extends BaseHandler<CallbackContext> {
 
-  final ApiCallsWrapper apiCallsWrapper;
+    final ApiCallsWrapper apiCallsWrapper;
 
-  public BaseHandlerStd() {
-    this(new ApiCallsWrapper());
-  }
+    public BaseHandlerStd() {
+        this(new ApiCallsWrapper());
+    }
 
-  public BaseHandlerStd(final ApiCallsWrapper apiCallsWrapper) {
-    Validate.notNull(apiCallsWrapper);
+    public BaseHandlerStd(final ApiCallsWrapper apiCallsWrapper) {
+        Validate.notNull(apiCallsWrapper);
 
-    this.apiCallsWrapper = apiCallsWrapper;
-  }
+        this.apiCallsWrapper = apiCallsWrapper;
+    }
 
-  @Override
-  public final ProgressEvent<ResourceModel, CallbackContext> handleRequest(
-      final AmazonWebServicesClientProxy proxy,
-      final ResourceHandlerRequest<ResourceModel> request,
-      final CallbackContext callbackContext,
-      final Logger logger) {
-    return handleRequest(
-        proxy,
-        request,
-        callbackContext != null ? callbackContext : new CallbackContext(),
-        proxy.newProxy(ClientBuilder::getClient),
-        logger
-    );
-  }
+    @Override
+    public final ProgressEvent<ResourceModel, CallbackContext> handleRequest(
+        final AmazonWebServicesClientProxy proxy,
+        final ResourceHandlerRequest<ResourceModel> request,
+        final CallbackContext callbackContext,
+        final Logger logger) {
+        return handleRequest(
+            proxy,
+            request,
+            callbackContext != null ? callbackContext : new CallbackContext(),
+            proxy.newProxy(ClientBuilder::getClient),
+            logger
+        );
+    }
 
-  protected abstract ProgressEvent<ResourceModel, CallbackContext> handleRequest(
-      final AmazonWebServicesClientProxy proxy,
-      final ResourceHandlerRequest<ResourceModel> request,
-      final CallbackContext callbackContext,
-      final ProxyClient<ResiliencehubClient> proxyClient,
-      final Logger logger);
+    protected abstract ProgressEvent<ResourceModel, CallbackContext> handleRequest(
+        final AmazonWebServicesClientProxy proxy,
+        final ResourceHandlerRequest<ResourceModel> request,
+        final CallbackContext callbackContext,
+        final ProxyClient<ResiliencehubClient> proxyClient,
+        final Logger logger);
 }
