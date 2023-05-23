@@ -1,11 +1,12 @@
-## My Project
+## AWS ResilienceHub Resources
 
-TODO: Fill this README out!
+Existing resources:
+* AWS::ResilienceHub::App
+* AWS::ResilienceHub::ResiliencyPolicy
 
-Be sure to:
-
-* Change the title in this README
-* Edit your repository description on GitHub
+Each resource has its own folders:
+* AWS::ResilienceHub::App - aws-resiliencehub-app
+* AWS::ResilienceHub::ResiliencyPolicy - aws-resiliencehub-resiliencypolicy
 
 ## Security
 

@@ -60,7 +60,7 @@ _Required_: No
 
 _Type_: String
 
-_Maximum_: <code>500</code>
+_Maximum Length_: <code>500</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -92,9 +92,9 @@ _Required_: Yes
 
 _Type_: String
 
-_Maximum_: <code>5000</code>
+_Maximum Length_: <code>5000</code>
 
-_Pattern_: <code>^[\w\s:,-\.'{}\[\]:"]+$</code>
+_Pattern_: <code>^[\w\s:,-\.'\/{}\[\]:"]+$</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

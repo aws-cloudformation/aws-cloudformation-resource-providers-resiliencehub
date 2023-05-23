@@ -25,6 +25,7 @@ public class TestDataProvider {
     public static final String APP_TEMPLATE = "appTemplateBody";
     public static final String LOGICAL_STACK_NAME = "logicalStackName";
     public static final String TERRAFORM_SOURCE_NAME = "stateFile.tf";
+    public static final String EKS_SOURCE_NAME = "eksSourceName";
     public static final String RESOURCE_NAME = "resourceName";
     public static final String POLICY_ARN = "PolicyArn";
 
@@ -50,6 +51,14 @@ public class TestDataProvider {
         .physicalResourceId(PhysicalResourceId.builder()
             .type(PhysicalIdentifierType.NATIVE)
             .identifier("s3://my-bucket/state.tf")
+            .build())
+        .build();
+    public static final ResourceMapping EKS_RESOURCE_MAPPING = ResourceMapping.builder()
+        .eksSourceName(EKS_SOURCE_NAME)
+        .mappingType(ResourceMappingType.EKS)
+        .physicalResourceId(PhysicalResourceId.builder()
+            .type(PhysicalIdentifierType.ARN)
+            .identifier("arn:aws:eks:us-west-2:0123456789:cluster/eksCluster")
             .build())
         .build();
 

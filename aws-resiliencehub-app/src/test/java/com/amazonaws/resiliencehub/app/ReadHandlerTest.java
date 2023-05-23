@@ -87,7 +87,6 @@ public class ReadHandlerTest extends AbstractTestBase {
         model.setAppTemplateBody(TestDataProvider.APP_TEMPLATE);
         model.setResourceMappings(
             Translator.toCfnResourceMappings(ImmutableSet.of(TestDataProvider.CFN_BACKED_SDK_RESOURCE_MAPPING)));
-
         assertThat(handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger))
             .isEqualTo(ProgressEvent.defaultSuccessHandler(model));
     }

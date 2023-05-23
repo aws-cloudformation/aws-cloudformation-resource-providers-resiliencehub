@@ -110,4 +110,5 @@ public class ExceptionHandlerWrapperTest {
         assertThrows(CfnInvalidRequestException.class, () ->
             ExceptionHandlerWrapper.wrapResilienceHubExceptions(OPERATION, serviceCall));
     }
+
 }

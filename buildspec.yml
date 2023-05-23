@@ -4,12 +4,10 @@ phases:
     runtime-versions:
       java: openjdk8
       python: 3.7
-    commands:
-      -  pip install --upgrade 'six==1.15.0'
-      -  pip install pre-commit cloudformation-cli-java-plugin
-      -  pip install --upgrade 'pyyaml < 6.0'
   build:
     commands:
-      - pre-commit run --all-files
       - cd "$CODEBUILD_SRC_DIR"
+      - pip install -r requirements.txt
+      - pre-commit run --all-files
+
       - mvn clean install --no-transfer-progress

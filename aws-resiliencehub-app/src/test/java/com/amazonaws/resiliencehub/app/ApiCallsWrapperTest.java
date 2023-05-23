@@ -182,12 +182,14 @@ public class ApiCallsWrapperTest {
         final Set<ResourceMapping> resourceMappings = ImmutableSet
             .of(TestDataProvider.CFN_BACKED_SDK_RESOURCE_MAPPING,
                 TestDataProvider.NATIVE_SDK_RESOURCE_MAPPING,
-                TestDataProvider.TERRAFORM_RESOURCE_MAPPING);
+                TestDataProvider.TERRAFORM_RESOURCE_MAPPING,
+                TestDataProvider.EKS_RESOURCE_MAPPING);
         final RemoveDraftAppVersionResourceMappingsRequest expectedRequest = RemoveDraftAppVersionResourceMappingsRequest.builder()
             .appArn(TestDataProvider.APP_ARN)
             .logicalStackNames(TestDataProvider.CFN_BACKED_SDK_RESOURCE_MAPPING.logicalStackName())
             .resourceNames(TestDataProvider.RESOURCE_NAME)
             .terraformSourceNames(TestDataProvider.TERRAFORM_SOURCE_NAME)
+            .eksSourceNames(TestDataProvider.EKS_SOURCE_NAME)
             .build();
 
         apiCallsWrapper.removeDraftAppVersionResourceMappings(TestDataProvider.APP_ARN, resourceMappings, proxyClient);
@@ -290,4 +292,5 @@ public class ApiCallsWrapperTest {
         assertTrue(CollectionUtils.isEqualCollection(ImmutableList.of(firstPageRequest, secondPageRequest),
             resourceMappingsRequestArgumentCaptor.getAllValues()));
     }
+
 }
