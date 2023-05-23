@@ -27,7 +27,7 @@ docker==6.1.2
 docutils==0.15.2
 exceptiongroup==1.1.1
 filelock==3.12.0
-Flask==1.0.4
+Flask==2.2.5
 future==0.18.3
 hypothesis==6.75.3
 identify==2.5.24
