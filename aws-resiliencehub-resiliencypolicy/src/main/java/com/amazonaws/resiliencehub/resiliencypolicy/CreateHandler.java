@@ -17,10 +17,6 @@ public class CreateHandler extends BaseHandlerStd {
         super();
     }
 
-    public CreateHandler(final ApiCallsWrapper apiCallsWrapper) {
-        super(apiCallsWrapper);
-    }
-
     @Override
     protected ProgressEvent<ResourceModel, CallbackContext> handleRequest(
         final AmazonWebServicesClientProxy proxy,
@@ -35,7 +31,7 @@ public class CreateHandler extends BaseHandlerStd {
         return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
             .then(progress -> createPolicy(proxy, proxyClient, progress.getCallbackContext(), progress.getResourceModel()))
             // Describe call/chain to return the resource model
-            .then(progress -> new ReadHandler(apiCallsWrapper)
+            .then(progress -> new ReadHandler()
                 .handleRequest(proxy, request, callbackContext, proxyClient, logger));
     }
 
@@ -51,7 +47,7 @@ public class CreateHandler extends BaseHandlerStd {
         }
         return proxy.initiate("AWS-ResilienceHub-ResiliencyPolicy::Create", proxyClient, model, callbackContext)
             .translateToServiceRequest(Translator::translateToCreateRequest)
-            .makeServiceCall(apiCallsWrapper::createResiliencyPolicy)
+            .makeServiceCall(ApiCallsWrapper::createResiliencyPolicy)
             .done(createResiliencyPolicyResponse -> {
                 model.setPolicyArn(createResiliencyPolicyResponse.policy().policyArn());
                 callbackContext.setCreated(true);

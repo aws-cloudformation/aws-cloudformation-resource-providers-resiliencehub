@@ -49,8 +49,8 @@ public class TestDataProvider {
             .build();
     }
 
-    public static software.amazon.awssdk.services.resiliencehub.model.ResiliencyPolicy getResiliencyPolicy() {
-        return software.amazon.awssdk.services.resiliencehub.model.ResiliencyPolicy.builder()
+    public static ResiliencyPolicy getResiliencyPolicy() {
+        return ResiliencyPolicy.builder()
             .policyArn(RESILIENCY_POLICY_ARN)
             .policyName(RESILIENCY_POLICY_NAME)
             .policyDescription(RESILIENCY_POLICY_DESCRIPTION)

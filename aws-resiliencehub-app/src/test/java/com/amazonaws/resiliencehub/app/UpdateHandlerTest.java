@@ -10,7 +10,6 @@ import java.time.Duration;
 
 import com.amazonaws.resiliencehub.common.AbstractTestBase;
 import com.amazonaws.resiliencehub.common.Constants;
-import com.amazonaws.resiliencehub.common.TaggingUtil;
 import com.google.common.collect.ImmutableSet;
 
 import software.amazon.awssdk.services.resiliencehub.ResiliencehubClient;
@@ -20,6 +19,7 @@ import software.amazon.awssdk.services.resiliencehub.model.DescribeAppResponse;
 import software.amazon.awssdk.services.resiliencehub.model.DescribeAppVersionTemplateRequest;
 import software.amazon.awssdk.services.resiliencehub.model.DescribeAppVersionTemplateResponse;
 import software.amazon.awssdk.services.resiliencehub.model.ListAppVersionResourceMappingsRequest;
+import software.amazon.awssdk.services.resiliencehub.model.ListAppVersionResourceMappingsResponse;
 import software.amazon.awssdk.services.resiliencehub.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.resiliencehub.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.resiliencehub.model.PublishAppVersionRequest;
@@ -34,8 +34,6 @@ import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,12 +41,6 @@ public class UpdateHandlerTest extends AbstractTestBase {
 
     @Mock
     private ResiliencehubClient sdkClient;
-
-    @Mock
-    private ApiCallsWrapper apiCallsWrapper;
-
-    @Mock
-    private TaggingUtil taggingUtil;
 
     private AmazonWebServicesClientProxy proxy;
     private ProxyClient<ResiliencehubClient> proxyClient;
@@ -58,7 +50,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
         proxyClient = MOCK_PROXY(proxy, sdkClient);
-        handler = new UpdateHandler(apiCallsWrapper, taggingUtil);
+        handler = new UpdateHandler();
     }
 
     @Test
@@ -86,6 +78,11 @@ public class UpdateHandlerTest extends AbstractTestBase {
             .build();
         final ListAppVersionResourceMappingsRequest listResourceMappingsRequestForUpdate = Translator
             .translateToListAppVersionResourceMappingsRequest(Constants.DRAFT_VERSION, desiredModel);
+        final ListAppVersionResourceMappingsResponse listAppVersionResourceMappingsResponseForUpdate =
+            ListAppVersionResourceMappingsResponse
+            .builder()
+            .resourceMappings(TestDataProvider.NATIVE_SDK_RESOURCE_MAPPING)
+            .build();
         final PublishAppVersionRequest publishAppVersionRequest = PublishAppVersionRequest.builder()
             .appArn(app.appArn())
             .build();
@@ -94,13 +91,14 @@ public class UpdateHandlerTest extends AbstractTestBase {
             .appVersion(Constants.RELEASE_VERSION)
             .build();
 
-        doReturn(updateAppResponse).when(apiCallsWrapper).updateApp(eq(updateAppRequest), eq(proxyClient));
-        doReturn(appVersionTemplateResponse).when(apiCallsWrapper)
-            .putDraftAppVersionTemplate(eq(appVersionTemplateRequest), eq(proxyClient));
-        doReturn(ImmutableSet.of(TestDataProvider.NATIVE_SDK_RESOURCE_MAPPING)).when(apiCallsWrapper)
-            .fetchAllResourceMappings(eq(listResourceMappingsRequestForUpdate), eq(proxyClient));
-        doReturn(publishAppVersionResponse).when(apiCallsWrapper)
-            .publishAppVersion(eq(publishAppVersionRequest), eq(proxyClient));
+
+        when(proxyClient.injectCredentialsAndInvokeV2(updateAppRequest, proxyClient.client()::updateApp)).thenReturn(updateAppResponse);
+        when(proxyClient.injectCredentialsAndInvokeV2(appVersionTemplateRequest, proxyClient.client()::putDraftAppVersionTemplate))
+            .thenReturn(appVersionTemplateResponse);
+        when(proxyClient.injectCredentialsAndInvokeV2(listResourceMappingsRequestForUpdate,
+            proxyClient.client()::listAppVersionResourceMappings)).thenReturn(listAppVersionResourceMappingsResponseForUpdate);
+        when(proxyClient.injectCredentialsAndInvokeV2(publishAppVersionRequest, proxyClient.client()::publishAppVersion))
+            .thenReturn(publishAppVersionResponse);
 
         // Read handler invoked in the Update handler at the end
         final DescribeAppRequest describeAppRequest = Translator.translateToReadAppRequest(desiredModel);
@@ -118,13 +116,18 @@ public class UpdateHandlerTest extends AbstractTestBase {
             .build();
         final ListAppVersionResourceMappingsRequest listResourceMappingsRequestForRead = Translator
             .translateToListAppVersionResourceMappingsRequest(Constants.RELEASE_VERSION, desiredModel);
+        final ListAppVersionResourceMappingsResponse listAppVersionResourceMappingsResponseForRead =
+            ListAppVersionResourceMappingsResponse
+                .builder()
+                .resourceMappings(TestDataProvider.CFN_BACKED_SDK_RESOURCE_MAPPING)
+                .build();
 
-        when(apiCallsWrapper.describeApp(eq(describeAppRequest), eq(proxyClient))).thenReturn(describeAppResponse);
-        when(taggingUtil.listTagsForResource(eq(listTagsForResourceRequest), eq(proxyClient))).thenReturn(listTagsForResourceResponse);
-        when(apiCallsWrapper.describeAppVersionTemplate(eq(describeAppVersionTemplateRequest), eq(proxyClient)))
-            .thenReturn(describeAppVersionTemplateResponse);
-        when(apiCallsWrapper.fetchAllResourceMappings(eq(listResourceMappingsRequestForRead), eq(proxyClient)))
-            .thenReturn(ImmutableSet.of(TestDataProvider.CFN_BACKED_SDK_RESOURCE_MAPPING));
+        when(proxyClient.injectCredentialsAndInvokeV2(describeAppRequest, proxyClient.client()::describeApp)).thenReturn(describeAppResponse);
+        when(proxyClient.injectCredentialsAndInvokeV2(listTagsForResourceRequest, proxyClient.client()::listTagsForResource))
+            .thenReturn(listTagsForResourceResponse);
+        when(proxyClient.injectCredentialsAndInvokeV2(describeAppVersionTemplateRequest, proxyClient.client()::describeAppVersionTemplate)).thenReturn(describeAppVersionTemplateResponse);
+        when(proxyClient.injectCredentialsAndInvokeV2(listResourceMappingsRequestForRead,
+            proxyClient.client()::listAppVersionResourceMappings)).thenReturn(listAppVersionResourceMappingsResponseForRead);
 
         assertThat(handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger))
             .isEqualTo(ProgressEvent.defaultSuccessHandler(desiredModel));

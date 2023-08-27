@@ -14,10 +14,6 @@ public class ListHandler extends BaseHandlerStd {
         super();
     }
 
-    public ListHandler(final ApiCallsWrapper apiCallsWrapper) {
-        super(apiCallsWrapper);
-    }
-
     @Override
     public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
         final AmazonWebServicesClientProxy proxy,
@@ -31,7 +27,7 @@ public class ListHandler extends BaseHandlerStd {
                 proxy.initiate("AWS-ResilienceHub-ResiliencyPolicy::list-policies", proxyClient, progress.getResourceModel(),
                     progress.getCallbackContext())
                     .translateToServiceRequest(model -> Translator.translateToListRequest(request.getNextToken()))
-                    .makeServiceCall(apiCallsWrapper::listResiliencyPolicies)
+                    .makeServiceCall(ApiCallsWrapper::listResiliencyPolicies)
                     .done(listResiliencyPolicyResponse -> ProgressEvent.<ResourceModel, CallbackContext>builder()
                         .resourceModels(Translator.translateFromListResponse(listResiliencyPolicyResponse))
                         .status(OperationStatus.SUCCESS)

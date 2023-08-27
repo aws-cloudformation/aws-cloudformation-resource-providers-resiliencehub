@@ -24,7 +24,6 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,9 +34,6 @@ public class CreateHandlerTest extends AbstractTestBase {
     @Mock
     private ResiliencehubClient sdkClient;
 
-    @Mock
-    private ApiCallsWrapper apiCallsWrapper;
-
     private AmazonWebServicesClientProxy proxy;
     private ProxyClient<ResiliencehubClient> proxyClient;
     private CreateHandler handler;
@@ -46,7 +42,7 @@ public class CreateHandlerTest extends AbstractTestBase {
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
         proxyClient = MOCK_PROXY(proxy, sdkClient);
-        handler = new CreateHandler(apiCallsWrapper);
+        handler = new CreateHandler();
     }
 
     @Test
@@ -56,7 +52,7 @@ public class CreateHandlerTest extends AbstractTestBase {
             .desiredResourceState(model)
             .build();
 
-        final software.amazon.awssdk.services.resiliencehub.model.ResiliencyPolicy resiliencyPolicy =
+        final ResiliencyPolicy resiliencyPolicy =
             TestDataProvider.getResiliencyPolicy();
 
         final CreateResiliencyPolicyRequest createResiliencyPolicyRequest = Translator.translateToCreateRequest(model);
@@ -64,7 +60,7 @@ public class CreateHandlerTest extends AbstractTestBase {
             .policy(resiliencyPolicy)
             .build();
 
-        when(apiCallsWrapper.createResiliencyPolicy(eq(createResiliencyPolicyRequest), eq(proxyClient)))
+        when(proxyClient.injectCredentialsAndInvokeV2(createResiliencyPolicyRequest, proxyClient.client()::createResiliencyPolicy))
             .thenReturn(createResiliencyPolicyResponse);
 
         final CallbackContext context = new CallbackContext();
@@ -89,7 +85,7 @@ public class CreateHandlerTest extends AbstractTestBase {
             .policy(resiliencyPolicy)
             .build();
 
-        when(apiCallsWrapper.describeResiliencyPolicy(eq(describeResiliencyPolicyRequest), eq(proxyClient)))
+        when(proxyClient.injectCredentialsAndInvokeV2(describeResiliencyPolicyRequest, proxyClient.client()::describeResiliencyPolicy))
             .thenReturn(describeResiliencyPolicyResponse);
 
         final CallbackContext context = new CallbackContext();
@@ -98,6 +94,6 @@ public class CreateHandlerTest extends AbstractTestBase {
             .isEqualTo(ProgressEvent.defaultSuccessHandler(model));
 
         // ResiliencyPolicy was already created and context.isCreated=true
-        verify(apiCallsWrapper, never()).createResiliencyPolicy(any(CreateResiliencyPolicyRequest.class), any());
+        verify(proxyClient.client(), never()).createResiliencyPolicy(any(CreateResiliencyPolicyRequest.class));
     }
 }

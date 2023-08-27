@@ -1,7 +1,6 @@
 package com.amazonaws.resiliencehub.app;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -60,13 +59,6 @@ public class ApiCallsWrapperTest {
     @Mock
     private ProxyClient<ResiliencehubClient> proxyClient;
 
-    private ApiCallsWrapper apiCallsWrapper;
-
-    @BeforeEach
-    public void setup() {
-        apiCallsWrapper = new ApiCallsWrapper();
-    }
-
     @Test
     public void testCreateApp() {
         when(proxyClient.client()).thenReturn(resiliencehubClient);
@@ -75,7 +67,7 @@ public class ApiCallsWrapperTest {
 
         doReturn(createAppResponse).when(proxyClient).injectCredentialsAndInvokeV2(same(createAppRequest), any());
 
-        assertEquals(createAppResponse, apiCallsWrapper.createApp(createAppRequest, proxyClient));
+        assertEquals(createAppResponse, ApiCallsWrapper.createApp(createAppRequest, proxyClient));
     }
 
     @Test
@@ -86,7 +78,7 @@ public class ApiCallsWrapperTest {
 
         doReturn(describeAppResponse).when(proxyClient).injectCredentialsAndInvokeV2(same(describeAppRequest), any());
 
-        assertEquals(describeAppResponse, apiCallsWrapper.describeApp(describeAppRequest, proxyClient));
+        assertEquals(describeAppResponse, ApiCallsWrapper.describeApp(describeAppRequest, proxyClient));
     }
 
     @Test
@@ -97,7 +89,7 @@ public class ApiCallsWrapperTest {
 
         doReturn(updateAppResponse).when(proxyClient).injectCredentialsAndInvokeV2(same(updateAppRequest), any());
 
-        assertEquals(updateAppResponse, apiCallsWrapper.updateApp(updateAppRequest, proxyClient));
+        assertEquals(updateAppResponse, ApiCallsWrapper.updateApp(updateAppRequest, proxyClient));
     }
 
     @Test
@@ -108,7 +100,7 @@ public class ApiCallsWrapperTest {
 
         doReturn(deleteAppResponse).when(proxyClient).injectCredentialsAndInvokeV2(same(deleteAppRequest), any());
 
-        assertEquals(deleteAppResponse, apiCallsWrapper.deleteApp(deleteAppRequest, proxyClient));
+        assertEquals(deleteAppResponse, ApiCallsWrapper.deleteApp(deleteAppRequest, proxyClient));
     }
 
     @Test
@@ -119,7 +111,7 @@ public class ApiCallsWrapperTest {
 
         doReturn(listAppsResponse).when(proxyClient).injectCredentialsAndInvokeV2(same(listAppsRequest), any());
 
-        assertEquals(listAppsResponse, apiCallsWrapper.listApps(listAppsRequest, proxyClient));
+        assertEquals(listAppsResponse, ApiCallsWrapper.listApps(listAppsRequest, proxyClient));
     }
 
     @Test
@@ -134,7 +126,7 @@ public class ApiCallsWrapperTest {
             .injectCredentialsAndInvokeV2(same(putDraftAppVersionTemplateRequest), any());
 
         assertEquals(putDraftAppVersionTemplateResponse,
-            apiCallsWrapper.putDraftAppVersionTemplate(putDraftAppVersionTemplateRequest, proxyClient));
+            ApiCallsWrapper.putDraftAppVersionTemplate(putDraftAppVersionTemplateRequest, proxyClient));
     }
 
     @Test
@@ -148,7 +140,7 @@ public class ApiCallsWrapperTest {
         doReturn(addDraftAppVersionResourceMappingsResponse).when(proxyClient)
             .injectCredentialsAndInvokeV2(same(addDraftAppVersionResourceMappingsRequest), any());
 
-        assertEquals(addDraftAppVersionResourceMappingsResponse, apiCallsWrapper
+        assertEquals(addDraftAppVersionResourceMappingsResponse, ApiCallsWrapper
             .addDraftAppVersionResourceMappings(addDraftAppVersionResourceMappingsRequest, proxyClient));
     }
 
@@ -162,7 +154,7 @@ public class ApiCallsWrapperTest {
             .resourceMappings(resourceMappings)
             .build();
 
-        apiCallsWrapper.addDraftAppVersionResourceMappings(TestDataProvider.APP_ARN, resourceMappings, proxyClient);
+        ApiCallsWrapper.addDraftAppVersionResourceMappings(TestDataProvider.APP_ARN, resourceMappings, proxyClient);
 
         verify(proxyClient).injectCredentialsAndInvokeV2(eq(expectedRequest), any());
     }
@@ -171,7 +163,7 @@ public class ApiCallsWrapperTest {
     public void testAddDraftAppVersionResourceMappings_withEmptyResourceMappings() {
         final Set<ResourceMapping> resourceMappings = ImmutableSet.of();
 
-        apiCallsWrapper.addDraftAppVersionResourceMappings(TestDataProvider.APP_ARN, resourceMappings, proxyClient);
+        ApiCallsWrapper.addDraftAppVersionResourceMappings(TestDataProvider.APP_ARN, resourceMappings, proxyClient);
 
         verify(proxyClient, never()).injectCredentialsAndInvokeV2(any(), any());
     }
@@ -192,7 +184,7 @@ public class ApiCallsWrapperTest {
             .eksSourceNames(TestDataProvider.EKS_SOURCE_NAME)
             .build();
 
-        apiCallsWrapper.removeDraftAppVersionResourceMappings(TestDataProvider.APP_ARN, resourceMappings, proxyClient);
+        ApiCallsWrapper.removeDraftAppVersionResourceMappings(TestDataProvider.APP_ARN, resourceMappings, proxyClient);
 
         verify(proxyClient).injectCredentialsAndInvokeV2(eq(expectedRequest), any());
     }
@@ -201,7 +193,7 @@ public class ApiCallsWrapperTest {
     public void testRemoveDraftAppVersionResourceMappings_emptyResourceMappings() {
         final Set<ResourceMapping> resourceMappings = ImmutableSet.of();
 
-        apiCallsWrapper.removeDraftAppVersionResourceMappings(TestDataProvider.APP_ARN, resourceMappings, proxyClient);
+        ApiCallsWrapper.removeDraftAppVersionResourceMappings(TestDataProvider.APP_ARN, resourceMappings, proxyClient);
 
         verify(proxyClient, never()).injectCredentialsAndInvokeV2(any(), any());
     }
@@ -216,7 +208,7 @@ public class ApiCallsWrapperTest {
             .injectCredentialsAndInvokeV2(same(publishAppVersionRequest), any());
 
         assertEquals(publishAppVersionResponse,
-            apiCallsWrapper.publishAppVersion(publishAppVersionRequest, proxyClient));
+            ApiCallsWrapper.publishAppVersion(publishAppVersionRequest, proxyClient));
     }
 
     @Test
@@ -231,7 +223,7 @@ public class ApiCallsWrapperTest {
             .injectCredentialsAndInvokeV2(same(putDraftAppVersionTemplateRequest), any());
 
         assertEquals(putDraftAppVersionTemplateResponse,
-            apiCallsWrapper.putDraftAppVersionTemplate(putDraftAppVersionTemplateRequest, proxyClient));
+            ApiCallsWrapper.putDraftAppVersionTemplate(putDraftAppVersionTemplateRequest, proxyClient));
     }
 
     @Test
@@ -245,7 +237,7 @@ public class ApiCallsWrapperTest {
         doReturn(resourceMappingsResponse).when(proxyClient)
             .injectCredentialsAndInvokeV2(any(ListAppVersionResourceMappingsRequest.class), any());
 
-        final Set<ResourceMapping> actualResourceMappings = apiCallsWrapper
+        final Set<ResourceMapping> actualResourceMappings = ApiCallsWrapper
             .fetchAllResourceMappings(resourceMappingsRequest, proxyClient);
 
         assertTrue(CollectionUtils.isEqualCollection(resourceMappingsResponse.resourceMappings(), actualResourceMappings));
@@ -281,7 +273,7 @@ public class ApiCallsWrapperTest {
             .thenReturn(firstPageResponse)
             .thenReturn(secondPageResponse);
 
-        final Set<ResourceMapping> actualResourceMappings = apiCallsWrapper
+        final Set<ResourceMapping> actualResourceMappings = ApiCallsWrapper
             .fetchAllResourceMappings(firstPageRequest, proxyClient);
 
         assertTrue(CollectionUtils.isEqualCollection(ImmutableSet.of(firstMapping, secondMapping), actualResourceMappings));

@@ -33,11 +33,8 @@ public class ApiCallsWrapperTest {
     @Mock
     private ProxyClient<ResiliencehubClient> proxyClient;
 
-    private ApiCallsWrapper apiCallsWrapper;
-
     @BeforeEach
     public void setup() {
-        apiCallsWrapper = new ApiCallsWrapper();
         when(proxyClient.client()).thenReturn(resiliencehubClient);
     }
 
@@ -49,7 +46,7 @@ public class ApiCallsWrapperTest {
         when(proxyClient.injectCredentialsAndInvokeV2(same(createResiliencyPolicyRequest), any()))
             .thenReturn(createResiliencyPolicyResponse);
 
-        assertEquals(createResiliencyPolicyResponse, apiCallsWrapper.createResiliencyPolicy(createResiliencyPolicyRequest, proxyClient));
+        assertEquals(createResiliencyPolicyResponse, ApiCallsWrapper.createResiliencyPolicy(createResiliencyPolicyRequest, proxyClient));
     }
 
     @Test
@@ -60,7 +57,7 @@ public class ApiCallsWrapperTest {
         when(proxyClient.injectCredentialsAndInvokeV2(same(deleteResiliencyPolicyRequest), any()))
             .thenReturn(deleteResiliencyPolicyResponse);
 
-        assertEquals(deleteResiliencyPolicyResponse, apiCallsWrapper.deleteResiliencyPolicy(deleteResiliencyPolicyRequest, proxyClient));
+        assertEquals(deleteResiliencyPolicyResponse, ApiCallsWrapper.deleteResiliencyPolicy(deleteResiliencyPolicyRequest, proxyClient));
     }
 
     @Test
@@ -72,7 +69,7 @@ public class ApiCallsWrapperTest {
             .thenReturn(describeResiliencyPolicyResponse);
 
         assertEquals(describeResiliencyPolicyResponse,
-            apiCallsWrapper.describeResiliencyPolicy(describeResiliencyPolicyRequest, proxyClient));
+            ApiCallsWrapper.describeResiliencyPolicy(describeResiliencyPolicyRequest, proxyClient));
     }
 
     @Test
@@ -83,7 +80,7 @@ public class ApiCallsWrapperTest {
         when(proxyClient.injectCredentialsAndInvokeV2(same(listResiliencyPoliciesRequest), any()))
             .thenReturn(listResiliencyPoliciesResponse);
 
-        assertEquals(listResiliencyPoliciesResponse, apiCallsWrapper.listResiliencyPolicies(listResiliencyPoliciesRequest, proxyClient));
+        assertEquals(listResiliencyPoliciesResponse, ApiCallsWrapper.listResiliencyPolicies(listResiliencyPoliciesRequest, proxyClient));
     }
 
     @Test
@@ -94,6 +91,6 @@ public class ApiCallsWrapperTest {
         when(proxyClient.injectCredentialsAndInvokeV2(same(updateResiliencyPolicyRequest), any()))
             .thenReturn(updateResiliencyPolicyResponse);
 
-        assertEquals(updateResiliencyPolicyResponse, apiCallsWrapper.updateResiliencyPolicy(updateResiliencyPolicyRequest, proxyClient));
+        assertEquals(updateResiliencyPolicyResponse, ApiCallsWrapper.updateResiliencyPolicy(updateResiliencyPolicyRequest, proxyClient));
     }
 }

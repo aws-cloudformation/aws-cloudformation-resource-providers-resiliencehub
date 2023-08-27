@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -141,10 +142,10 @@ public class Translator {
         final Map<String, FailurePolicy> policy) {
         final Map<DisruptionType, software.amazon.awssdk.services.resiliencehub.model.FailurePolicy> policyMap = new HashMap<>();
 
-        for (final String key : policy.keySet()) {
-            policyMap.put(DisruptionType.fromValue(key), software.amazon.awssdk.services.resiliencehub.model.FailurePolicy.builder()
-                .rpoInSecs(policy.get(key).getRpoInSecs())
-                .rtoInSecs(policy.get(key).getRtoInSecs())
+        for (final Entry<String, FailurePolicy>  entry : policy.entrySet()) {
+            policyMap.put(DisruptionType.fromValue(entry.getKey()), software.amazon.awssdk.services.resiliencehub.model.FailurePolicy.builder()
+                .rpoInSecs(entry.getValue().getRpoInSecs())
+                .rtoInSecs(entry.getValue().getRtoInSecs())
                 .build());
         }
         return policyMap;
@@ -153,10 +154,10 @@ public class Translator {
     static Map<String, FailurePolicy> toResourceModel(
         final Map<DisruptionType, software.amazon.awssdk.services.resiliencehub.model.FailurePolicy> policy) {
         final Map<String, FailurePolicy> policyMap = new HashMap<>();
-        for (final DisruptionType key : policy.keySet()) {
-            policyMap.put(key.toString(), FailurePolicy.builder()
-                .rpoInSecs(policy.get(key).rpoInSecs())
-                .rtoInSecs(policy.get(key).rtoInSecs())
+        for (final Entry<DisruptionType, software.amazon.awssdk.services.resiliencehub.model.FailurePolicy> entry : policy.entrySet()) {
+            policyMap.put(entry.getKey().toString(), FailurePolicy.builder()
+                .rpoInSecs(entry.getValue().rpoInSecs())
+                .rtoInSecs(entry.getValue().rtoInSecs())
                 .build());
         }
         return policyMap;

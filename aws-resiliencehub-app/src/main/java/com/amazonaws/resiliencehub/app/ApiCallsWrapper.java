@@ -51,7 +51,7 @@ public class ApiCallsWrapper {
     private static final String DESCRIBE_APP_VERSION_TEMPLATE = "DescribeAppVersionTemplate";
     private static final String LIST_APP_VERSION_RESOURCE_MAPPINGS = "ListAppVersionResourceMappings";
 
-    public CreateAppResponse createApp(
+    public static CreateAppResponse createApp(
         final CreateAppRequest createAppRequest,
         final ProxyClient<ResiliencehubClient> proxyClient) {
         Validate.notNull(createAppRequest);
@@ -62,7 +62,7 @@ public class ApiCallsWrapper {
                 proxyClient.client()::createApp));
     }
 
-    public DescribeAppResponse describeApp(
+    public static DescribeAppResponse describeApp(
         final DescribeAppRequest describeAppRequest,
         final ProxyClient<ResiliencehubClient> proxyClient) {
         Validate.notNull(describeAppRequest);
@@ -73,7 +73,7 @@ public class ApiCallsWrapper {
                 proxyClient.client()::describeApp));
     }
 
-    public UpdateAppResponse updateApp(
+    public static UpdateAppResponse updateApp(
         final UpdateAppRequest updateAppRequest,
         final ProxyClient<ResiliencehubClient> proxyClient) {
         Validate.notNull(updateAppRequest);
@@ -84,7 +84,7 @@ public class ApiCallsWrapper {
                 proxyClient.client()::updateApp));
     }
 
-    public DeleteAppResponse deleteApp(
+    public static DeleteAppResponse deleteApp(
         final DeleteAppRequest deleteAppRequest,
         final ProxyClient<ResiliencehubClient> proxyClient) {
         Validate.notNull(deleteAppRequest);
@@ -95,7 +95,7 @@ public class ApiCallsWrapper {
                 proxyClient.client()::deleteApp));
     }
 
-    public ListAppsResponse listApps(
+    public static ListAppsResponse listApps(
         final ListAppsRequest listAppsRequest,
         final ProxyClient<ResiliencehubClient> proxyClient) {
         Validate.notNull(listAppsRequest);
@@ -106,7 +106,7 @@ public class ApiCallsWrapper {
                 proxyClient.client()::listApps));
     }
 
-    public PutDraftAppVersionTemplateResponse putDraftAppVersionTemplate(
+    public static PutDraftAppVersionTemplateResponse putDraftAppVersionTemplate(
         final PutDraftAppVersionTemplateRequest putDraftAppVersionTemplateRequest,
         final ProxyClient<ResiliencehubClient> proxyClient) {
         Validate.notNull(putDraftAppVersionTemplateRequest);
@@ -117,7 +117,7 @@ public class ApiCallsWrapper {
                 proxyClient.client()::putDraftAppVersionTemplate));
     }
 
-    public AddDraftAppVersionResourceMappingsResponse addDraftAppVersionResourceMappings(
+    public static AddDraftAppVersionResourceMappingsResponse addDraftAppVersionResourceMappings(
         final AddDraftAppVersionResourceMappingsRequest addDraftAppVersionResourceMappingsRequest,
         final ProxyClient<ResiliencehubClient> proxyClient) {
         Validate.notNull(addDraftAppVersionResourceMappingsRequest);
@@ -128,7 +128,7 @@ public class ApiCallsWrapper {
                 proxyClient.client()::addDraftAppVersionResourceMappings));
     }
 
-    public void addDraftAppVersionResourceMappings(
+    public static void addDraftAppVersionResourceMappings(
         final String appArn,
         final Set<ResourceMapping> resourceMappings,
         final ProxyClient<ResiliencehubClient> proxyClient) {
@@ -144,7 +144,7 @@ public class ApiCallsWrapper {
         }
     }
 
-    public void removeDraftAppVersionResourceMappings(
+    public static void removeDraftAppVersionResourceMappings(
         final String appArn,
         final Set<ResourceMapping> resourceMappings,
         final ProxyClient<ResiliencehubClient> proxyClient) {
@@ -161,7 +161,7 @@ public class ApiCallsWrapper {
         }
     }
 
-    public PublishAppVersionResponse publishAppVersion(
+    public static PublishAppVersionResponse publishAppVersion(
         final PublishAppVersionRequest publishAppVersionRequest,
         final ProxyClient<ResiliencehubClient> proxyClient) {
         Validate.notNull(publishAppVersionRequest);
@@ -172,7 +172,7 @@ public class ApiCallsWrapper {
                 proxyClient.client()::publishAppVersion));
     }
 
-    public DescribeAppVersionTemplateResponse describeAppVersionTemplate(
+    public static DescribeAppVersionTemplateResponse describeAppVersionTemplate(
         final DescribeAppVersionTemplateRequest describeAppVersionTemplateRequest,
         final ProxyClient<ResiliencehubClient> proxyClient) {
         Validate.notNull(describeAppVersionTemplateRequest);
@@ -183,7 +183,7 @@ public class ApiCallsWrapper {
                 proxyClient.client()::describeAppVersionTemplate));
     }
 
-    public Set<ResourceMapping> fetchAllResourceMappings(
+    public static Set<ResourceMapping> fetchAllResourceMappings(
         final ListAppVersionResourceMappingsRequest listAppVersionResourceMappingsRequest,
         final ProxyClient<ResiliencehubClient> proxyClient) {
         Validate.notNull(listAppVersionResourceMappingsRequest);

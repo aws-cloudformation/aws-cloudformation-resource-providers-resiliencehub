@@ -15,10 +15,6 @@ public class ReadHandler extends BaseHandlerStd {
         super();
     }
 
-    public ReadHandler(final ApiCallsWrapper apiCallsWrapper) {
-        super(apiCallsWrapper);
-    }
-
     @Override
     protected ProgressEvent<ResourceModel, CallbackContext> handleRequest(
         final AmazonWebServicesClientProxy proxy,
@@ -41,7 +37,7 @@ public class ReadHandler extends BaseHandlerStd {
         final ResourceModel model) {
         return proxy.initiate("AWS-ResilienceHub-ResiliencyPolicy::read-policy", proxyClient, model, callbackContext)
             .translateToServiceRequest(Translator::translateToReadRequest)
-            .makeServiceCall(apiCallsWrapper::describeResiliencyPolicy)
+            .makeServiceCall(ApiCallsWrapper::describeResiliencyPolicy)
             .done(describeResiliencyPolicyResponse -> {
                 final ResourceModel outputModel = Translator.translateFromReadResponse(describeResiliencyPolicyResponse);
                 logger.log(String.format("Successfully read resiliency policy [%s] for resourceType %s. Continuing further..",

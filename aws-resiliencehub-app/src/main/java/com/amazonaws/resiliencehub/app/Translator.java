@@ -2,6 +2,7 @@ package com.amazonaws.resiliencehub.app;
 
 import org.apache.commons.lang3.Validate;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +52,8 @@ public class Translator {
             .description(model.getDescription())
             .policyArn(model.getResiliencyPolicyArn())
             .assessmentSchedule(model.getAppAssessmentSchedule())
+            .permissionModel(toSdkPermissionModel(model.getPermissionModel()))
+            .eventSubscriptions(toSdkEventSubscriptions(model.getEventSubscriptions()))
             .tags(model.getTags())
             .build();
     }
@@ -67,6 +70,8 @@ public class Translator {
             .description(model.getDescription())
             .policyArn(model.getResiliencyPolicyArn())
             .assessmentSchedule(model.getAppAssessmentSchedule())
+            .permissionModel(toSdkPermissionModel(model.getPermissionModel()))
+            .eventSubscriptions(toSdkEventSubscriptions(model.getEventSubscriptions()))
             .build();
     }
 
@@ -97,6 +102,9 @@ public class Translator {
             .description(app.description())
             .resiliencyPolicyArn(app.policyArn())
             .appAssessmentSchedule(app.assessmentScheduleAsString())
+            .permissionModel(toCfnPermissionModel(app.permissionModel()))
+            .eventSubscriptions(toCfnEventSubscriptions(app.eventSubscriptions()))
+            .driftStatus(app.driftStatusAsString())
             .tags(app.tags())
             .build();
     }
@@ -230,6 +238,8 @@ public class Translator {
                 case EKS:
                     eksSourceNames.add(resourceMapping.eksSourceName());
                     break;
+                default:
+                    throw new IllegalArgumentException("Unsupported resource mapping type: " + resourceMapping.mappingType());
             }
         }
 
@@ -297,6 +307,26 @@ public class Translator {
             .collect(Collectors.toList());
     }
 
+    static PermissionModel toCfnPermissionModel(
+        final software.amazon.awssdk.services.resiliencehub.model.PermissionModel sdkPermissionModel) {
+        return sdkPermissionModel == null
+            ? null
+            : PermissionModel.builder()
+                .type(sdkPermissionModel.typeAsString())
+                .invokerRoleName(sdkPermissionModel.invokerRoleName())
+                .crossAccountRoleArns(new ArrayList<>(sdkPermissionModel.crossAccountRoleArns()))
+                .build();
+    }
+
+    static List<EventSubscription> toCfnEventSubscriptions(
+        final List<software.amazon.awssdk.services.resiliencehub.model.EventSubscription> eventSubscriptions) {
+        return eventSubscriptions == null
+            ? null
+            : eventSubscriptions.stream()
+            .map(Translator::toCfnEventSubscription)
+            .collect(Collectors.toList());
+    }
+
     /**
      * Request to list the tags for an App
      *
@@ -309,6 +339,15 @@ public class Translator {
             .build();
     }
 
+    static List<software.amazon.awssdk.services.resiliencehub.model.EventSubscription> toSdkEventSubscriptions(
+        final List<com.amazonaws.resiliencehub.app.EventSubscription> cfnEventSubscriptions) {
+        return cfnEventSubscriptions == null
+            ? null
+            : cfnEventSubscriptions.stream()
+            .map(Translator::toSdkEventSubscription)
+            .collect(Collectors.toList());
+    }
+
     /**
      * Takes a list of CFN resourceMapping objects and returns a set of SDK resourceMappings.
      *
@@ -316,14 +355,14 @@ public class Translator {
      * @return Set of SDK resource mappings
      */
     static Set<software.amazon.awssdk.services.resiliencehub.model.ResourceMapping> toSdkResourceMappings(
-        final List<com.amazonaws.resiliencehub.app.ResourceMapping> cfnResourceMappings) {
+        final List<ResourceMapping> cfnResourceMappings) {
         return cfnResourceMappings.stream()
             .map(Translator::toSdkResourceMapping)
             .collect(Collectors.toSet());
     }
 
     private static software.amazon.awssdk.services.resiliencehub.model.ResourceMapping toSdkResourceMapping(
-        final com.amazonaws.resiliencehub.app.ResourceMapping cfnResourceMapping) {
+        final ResourceMapping cfnResourceMapping) {
         return software.amazon.awssdk.services.resiliencehub.model.ResourceMapping.builder()
             .logicalStackName(cfnResourceMapping.getLogicalStackName())
             .mappingType(ResourceMappingType.fromValue(cfnResourceMapping.getMappingType()))
@@ -335,13 +374,33 @@ public class Translator {
     }
 
     private static software.amazon.awssdk.services.resiliencehub.model.PhysicalResourceId toSdkPhysicalResourceId(
-        final com.amazonaws.resiliencehub.app.PhysicalResourceId cfnPhysicalResourceId) {
+        final PhysicalResourceId cfnPhysicalResourceId) {
         return software.amazon.awssdk.services.resiliencehub.model.PhysicalResourceId.builder()
             .awsAccountId(cfnPhysicalResourceId.getAwsAccountId())
             .awsRegion(cfnPhysicalResourceId.getAwsRegion())
             .identifier(cfnPhysicalResourceId.getIdentifier())
             .type(PhysicalIdentifierType.fromValue(cfnPhysicalResourceId.getType()))
             .build();
+    }
+
+    private static software.amazon.awssdk.services.resiliencehub.model.PermissionModel toSdkPermissionModel(
+        final com.amazonaws.resiliencehub.app.PermissionModel cfnPermissionModel) {
+        return cfnPermissionModel == null
+            ? null
+            : software.amazon.awssdk.services.resiliencehub.model.PermissionModel.builder()
+                .type(cfnPermissionModel.getType())
+                .invokerRoleName(cfnPermissionModel.getInvokerRoleName())
+                .crossAccountRoleArns(new ArrayList<>(cfnPermissionModel.getCrossAccountRoleArns()))
+                .build();
+    }
+
+    private static software.amazon.awssdk.services.resiliencehub.model.EventSubscription toSdkEventSubscription(
+        final com.amazonaws.resiliencehub.app.EventSubscription cfnEventSubscription) {
+        return software.amazon.awssdk.services.resiliencehub.model.EventSubscription.builder()
+                .name(cfnEventSubscription.getName())
+                .eventType(cfnEventSubscription.getEventType())
+                .snsTopicArn(cfnEventSubscription.getSnsTopicArn())
+                .build();
     }
 
     private static ResourceMapping toCfnResourceMapping(
@@ -363,6 +422,15 @@ public class Translator {
             .awsRegion(sdkPhysicalResourceId.awsRegion())
             .identifier(sdkPhysicalResourceId.identifier())
             .type(sdkPhysicalResourceId.type().toString())
+            .build();
+    }
+
+    private static EventSubscription toCfnEventSubscription(
+        final software.amazon.awssdk.services.resiliencehub.model.EventSubscription sdkEventSubscription) {
+        return EventSubscription.builder()
+            .name(sdkEventSubscription.name())
+            .eventType(sdkEventSubscription.eventTypeAsString())
+            .snsTopicArn(sdkEventSubscription.snsTopicArn())
             .build();
     }
 

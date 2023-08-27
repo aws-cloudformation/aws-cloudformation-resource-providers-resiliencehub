@@ -24,7 +24,6 @@ import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,9 +31,6 @@ public class DeleteHandlerTest extends AbstractTestBase {
 
     @Mock
     private ResiliencehubClient sdkClient;
-
-    @Mock
-    private ApiCallsWrapper apiCallsWrapper;
 
     private AmazonWebServicesClientProxy proxy;
     private ProxyClient<ResiliencehubClient> proxyClient;
@@ -44,7 +40,7 @@ public class DeleteHandlerTest extends AbstractTestBase {
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
         proxyClient = MOCK_PROXY(proxy, sdkClient);
-        handler = new DeleteHandler(apiCallsWrapper);
+        handler = new DeleteHandler();
     }
 
     @Test
@@ -59,9 +55,11 @@ public class DeleteHandlerTest extends AbstractTestBase {
         final DeleteAppResponse deleteAppResponse = DeleteAppResponse.builder().appArn(app.appArn()).build();
         final ListAppsRequest listAppsRequest = ListAppsRequest.builder().appArn(app.appArn()).build();
 
-        when(apiCallsWrapper.listApps(eq(listAppsRequest), eq(proxyClient)))
+
+        when(proxyClient.injectCredentialsAndInvokeV2(listAppsRequest, proxyClient.client()::listApps))
             .thenReturn(ListAppsResponse.builder().appSummaries(Collections.emptyList()).build());
-        when(apiCallsWrapper.deleteApp(eq(deleteAppRequest), eq(proxyClient))).thenReturn(deleteAppResponse);
+        when(proxyClient.injectCredentialsAndInvokeV2(deleteAppRequest, proxyClient.client()::deleteApp))
+            .thenReturn(deleteAppResponse);
 
         assertThat(handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger))
             .isEqualTo(ProgressEvent.defaultSuccessHandler(null));
@@ -79,10 +77,11 @@ public class DeleteHandlerTest extends AbstractTestBase {
         final DeleteAppResponse deleteAppResponse = DeleteAppResponse.builder().appArn(app.appArn()).build();
         final ListAppsRequest listAppsRequest = ListAppsRequest.builder().appArn(app.appArn()).build();
 
-        when(apiCallsWrapper.listApps(eq(listAppsRequest), eq(proxyClient)))
+        when(proxyClient.injectCredentialsAndInvokeV2(listAppsRequest, proxyClient.client()::listApps))
             .thenReturn(ListAppsResponse.builder().appSummaries(ImmutableList.of(TestDataProvider.appSummary(app))).build())
             .thenReturn(ListAppsResponse.builder().appSummaries(Collections.emptyList()).build());
-        when(apiCallsWrapper.deleteApp(eq(deleteAppRequest), eq(proxyClient))).thenReturn(deleteAppResponse);
+        when(proxyClient.injectCredentialsAndInvokeV2(deleteAppRequest, proxyClient.client()::deleteApp))
+            .thenReturn(deleteAppResponse);
 
         assertThat(handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger))
             .isEqualTo(ProgressEvent.defaultSuccessHandler(null));
