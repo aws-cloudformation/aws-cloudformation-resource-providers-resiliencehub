@@ -7,11 +7,16 @@ import com.google.common.collect.ImmutableMap;
 import software.amazon.awssdk.services.resiliencehub.model.App;
 import software.amazon.awssdk.services.resiliencehub.model.AppAssessmentScheduleType;
 import software.amazon.awssdk.services.resiliencehub.model.AppComplianceStatusType;
+import software.amazon.awssdk.services.resiliencehub.model.AppDriftStatusType;
 import software.amazon.awssdk.services.resiliencehub.model.AppStatusType;
 import software.amazon.awssdk.services.resiliencehub.model.AppSummary;
 import software.amazon.awssdk.services.resiliencehub.model.CreateAppRequest;
 import software.amazon.awssdk.services.resiliencehub.model.CreateAppResponse;
 import software.amazon.awssdk.services.resiliencehub.model.DescribeAppResponse;
+import software.amazon.awssdk.services.resiliencehub.model.EventSubscription;
+import software.amazon.awssdk.services.resiliencehub.model.EventType;
+import software.amazon.awssdk.services.resiliencehub.model.PermissionModel;
+import software.amazon.awssdk.services.resiliencehub.model.PermissionModelType;
 import software.amazon.awssdk.services.resiliencehub.model.PhysicalIdentifierType;
 import software.amazon.awssdk.services.resiliencehub.model.PhysicalResourceId;
 import software.amazon.awssdk.services.resiliencehub.model.ResourceMapping;
@@ -69,6 +74,9 @@ public class TestDataProvider {
             .description(app.description())
             .resiliencyPolicyArn(app.policyArn())
             .appAssessmentSchedule(app.assessmentScheduleAsString())
+            .permissionModel(Translator.toCfnPermissionModel(app.permissionModel()))
+            .eventSubscriptions(Translator.toCfnEventSubscriptions(app.eventSubscriptions()))
+            .driftStatus(app().driftStatusAsString())
             .tags(app.tags())
             .build();
     }
@@ -91,6 +99,16 @@ public class TestDataProvider {
             .description(APP_DESC)
             .policyArn(POLICY_ARN)
             .assessmentSchedule(AppAssessmentScheduleType.DAILY)
+            .permissionModel(PermissionModel.builder()
+                .invokerRoleName("invoker-role-name")
+                .crossAccountRoleArns("arn:aws:iam::012345678912:role/cross-account-role-name")
+                .type(PermissionModelType.ROLE_BASED)
+                .build())
+            .eventSubscriptions(EventSubscription.builder()
+                .name("even-subscription-name")
+                .snsTopicArn("arn:aws:sns:us-west-2:012345678912:sns-topic-name")
+                .eventType(EventType.DRIFT_DETECTED)
+                .build())
             .tags(ImmutableMap.of("t1", "v1"))
             .build();
     }
@@ -114,6 +132,10 @@ public class TestDataProvider {
             .resiliencyScore(null)
             .lastResiliencyScoreEvaluationTime(null)
             .assessmentSchedule(AppAssessmentScheduleType.DAILY)
+            .permissionModel(request.permissionModel())
+            .eventSubscriptions(request.eventSubscriptions())
+            .driftStatus(AppDriftStatusType.NOT_CHECKED)
+            .lastDriftEvaluationTime(null)
             .tags(request.tags())
             .build();
     }

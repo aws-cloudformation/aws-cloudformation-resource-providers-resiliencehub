@@ -13,6 +13,8 @@ public class ClientBuilder {
     public static ResiliencehubClient getClient() {
         if (client == null) {
             client = ResiliencehubClient.builder()
+//                Uncomment this line to force CFN to use your endpoint ↓
+//                .endpointOverride(URI.create("https://YOUR_ALIAS.people.aws.dev/"))
                 .httpClient(LambdaWrapper.HTTP_CLIENT)
                 .build();
         }

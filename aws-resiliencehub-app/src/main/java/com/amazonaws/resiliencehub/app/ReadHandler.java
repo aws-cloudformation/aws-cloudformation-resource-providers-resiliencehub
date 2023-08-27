@@ -1,7 +1,5 @@
 package com.amazonaws.resiliencehub.app;
 
-import org.apache.commons.lang3.Validate;
-
 import com.amazonaws.resiliencehub.common.Constants;
 import com.amazonaws.resiliencehub.common.TaggingUtil;
 
@@ -15,18 +13,9 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 public class ReadHandler extends BaseHandlerStd {
 
     private Logger logger;
-    private final TaggingUtil taggingUtil;
 
     public ReadHandler() {
         super();
-        this.taggingUtil = new TaggingUtil();
-    }
-
-    public ReadHandler(final ApiCallsWrapper apiCallsWrapper, final TaggingUtil taggingUtil) {
-        super(apiCallsWrapper);
-        Validate.notNull(taggingUtil);
-
-        this.taggingUtil = taggingUtil;
     }
 
     @Override
@@ -55,7 +44,7 @@ public class ReadHandler extends BaseHandlerStd {
         final ResourceModel model) {
         return proxy.initiate("AWS-ResilienceHub-App::read-app", proxyClient, model, callbackContext)
             .translateToServiceRequest(Translator::translateToReadAppRequest)
-            .makeServiceCall(apiCallsWrapper::describeApp)
+            .makeServiceCall(ApiCallsWrapper::describeApp)
             .done(describeAppResponse -> {
                 final ResourceModel readModel = Translator.translateFromReadResponse(describeAppResponse);
                 logger.log(String.format("Successfully read app [%s] for resource type %s. Continuing further..", readModel.getName(),
@@ -71,7 +60,7 @@ public class ReadHandler extends BaseHandlerStd {
         final ResourceModel model) {
         return proxy.initiate("AWS-ResilienceHub-App::read-tags", proxyClient, model, callbackContext)
             .translateToServiceRequest(Translator::translateToListTagsForResourceRequest)
-            .makeServiceCall(taggingUtil::listTagsForResource)
+            .makeServiceCall(TaggingUtil::listTagsForResource)
             .done(listTagsForResourceResponse -> {
                 model.setTags(listTagsForResourceResponse.tags());
                 logger.log(String.format("Successfully read tags for app [%s] resource type %s. Continuing further..", model.getName(),
@@ -87,7 +76,7 @@ public class ReadHandler extends BaseHandlerStd {
         final ResourceModel model) {
         return proxy.initiate("AWS-ResilienceHub-App::describe-app-template", proxyClient, model, callbackContext)
             .translateToServiceRequest(Translator::translateToDescribeAppVersionTemplateRequest)
-            .makeServiceCall(apiCallsWrapper::describeAppVersionTemplate)
+            .makeServiceCall(ApiCallsWrapper::describeAppVersionTemplate)
             .done(describeAppVersionTemplateResponse -> {
                 model.setAppTemplateBody(describeAppVersionTemplateResponse.appTemplateBody());
                 logger.log(String.format("App template for %s [%s] has been successfully read.",
@@ -104,7 +93,7 @@ public class ReadHandler extends BaseHandlerStd {
         return proxy.initiate("AWS-ResilienceHub-App::list-resource-mappings", proxyClient, model, callbackContext)
             .translateToServiceRequest(
                 resourceModel -> Translator.translateToListAppVersionResourceMappingsRequest(Constants.RELEASE_VERSION, resourceModel))
-            .makeServiceCall(apiCallsWrapper::fetchAllResourceMappings)
+            .makeServiceCall(ApiCallsWrapper::fetchAllResourceMappings)
             .done(resourceMappings -> {
                 model.setResourceMappings(Translator.toCfnResourceMappings(resourceMappings));
                 logger.log(String

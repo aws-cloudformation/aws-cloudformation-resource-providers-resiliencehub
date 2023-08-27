@@ -14,10 +14,6 @@ public class ListHandler extends BaseHandlerStd {
         super();
     }
 
-    public ListHandler(final ApiCallsWrapper apiCallsWrapper) {
-        super(apiCallsWrapper);
-    }
-
     @Override
     protected ProgressEvent<ResourceModel, CallbackContext> handleRequest(
         final AmazonWebServicesClientProxy proxy,
@@ -32,7 +28,7 @@ public class ListHandler extends BaseHandlerStd {
                     progress.getCallbackContext())
                     .translateToServiceRequest(
                         model -> Translator.translateToListAppRequest(request.getNextToken()))
-                    .makeServiceCall(apiCallsWrapper::listApps)
+                    .makeServiceCall(ApiCallsWrapper::listApps)
                     .done(listAppsResponse -> ProgressEvent.<ResourceModel, CallbackContext>builder()
                         .resourceModels(Translator.translateFromListResponse(listAppsResponse))
                         .status(OperationStatus.SUCCESS)

@@ -24,7 +24,7 @@ import software.amazon.cloudformation.exceptions.CfnThrottlingException;
  * This is necessary so that CloudFormation can determine whether or not it should
  * retry a failed request.
  */
-public class ExceptionHandlerWrapper {
+public final class ExceptionHandlerWrapper {
 
     static final String THROTTLING_ERROR_CODE = "ThrottlingException";
     static final String ACCESS_DENIED_ERROR_CODE = "AccessDeniedException";

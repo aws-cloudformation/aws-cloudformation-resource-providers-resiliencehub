@@ -1,9 +1,5 @@
 package com.amazonaws.resiliencehub.app;
 
-import org.apache.commons.lang3.Validate;
-
-import com.amazonaws.resiliencehub.common.TaggingUtil;
-
 import software.amazon.awssdk.services.resiliencehub.ResiliencehubClient;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
@@ -16,18 +12,9 @@ public class CreateHandler extends BaseHandlerStd {
     static final int CALLBACK_DELAY_SECONDS = 1;
 
     private Logger logger;
-    private final TaggingUtil taggingUtil;
 
     public CreateHandler() {
         super();
-        this.taggingUtil = new TaggingUtil();
-    }
-
-    public CreateHandler(final ApiCallsWrapper apiCallsWrapper, final TaggingUtil taggingUtil) {
-        super(apiCallsWrapper);
-        Validate.notNull(taggingUtil);
-
-        this.taggingUtil = taggingUtil;
     }
 
     @Override
@@ -47,7 +34,7 @@ public class CreateHandler extends BaseHandlerStd {
             .then(progress -> addResourceMappings(proxy, proxyClient, progress.getCallbackContext(), progress.getResourceModel()))
             .then(progress -> publishVersion(proxy, proxyClient, progress.getCallbackContext(), progress.getResourceModel()))
             // Describe call/chain to return the resource model
-            .then(progress -> new ReadHandler(apiCallsWrapper, taggingUtil)
+            .then(progress -> new ReadHandler()
                 .handleRequest(proxy, request, callbackContext, proxyClient, logger));
     }
 
@@ -63,7 +50,7 @@ public class CreateHandler extends BaseHandlerStd {
         }
         return proxy.initiate("AWS-ResilienceHub-App::create-app", proxyClient, model, callbackContext)
             .translateToServiceRequest(Translator::translateToCreateAppRequest)
-            .makeServiceCall(apiCallsWrapper::createApp)
+            .makeServiceCall(ApiCallsWrapper::createApp)
             .done(createAppResponse -> {
                 model.setAppArn(createAppResponse.app().appArn());
                 callbackContext.setCreated(true);
@@ -80,7 +67,7 @@ public class CreateHandler extends BaseHandlerStd {
         final ResourceModel model) {
         return proxy.initiate("AWS-ResilienceHub-App::add-template", proxyClient, model, callbackContext)
             .translateToServiceRequest(Translator::translateToPutDraftAppVersionTemplateRequest)
-            .makeServiceCall(apiCallsWrapper::putDraftAppVersionTemplate)
+            .makeServiceCall(ApiCallsWrapper::putDraftAppVersionTemplate)
             .done(putDraftAppVersionTemplateResponse -> {
                 logger.log(String.format("Successfully added template to %s [%s].",
                     ResourceModel.TYPE_NAME, model.getName()));
@@ -95,7 +82,7 @@ public class CreateHandler extends BaseHandlerStd {
         final ResourceModel model) {
         return proxy.initiate("AWS-ResilienceHub-App::add-resource-mappings", proxyClient, model, callbackContext)
             .translateToServiceRequest(Translator::translateToAddDraftAppVersionResourceMappingsRequest)
-            .makeServiceCall(apiCallsWrapper::addDraftAppVersionResourceMappings)
+            .makeServiceCall(ApiCallsWrapper::addDraftAppVersionResourceMappings)
             .done(addDraftAppVersionResourceMappingsResponse -> {
                 logger.log(String.format("Successfully added resource mappings to %s [%s].",
                     ResourceModel.TYPE_NAME, model.getName()));
@@ -110,7 +97,7 @@ public class CreateHandler extends BaseHandlerStd {
         final ResourceModel model) {
         return proxy.initiate("AWS-ResilienceHub-App::publish-version", proxyClient, model, callbackContext)
             .translateToServiceRequest(Translator::translateToPublishAppVersionRequest)
-            .makeServiceCall(apiCallsWrapper::publishAppVersion)
+            .makeServiceCall(ApiCallsWrapper::publishAppVersion)
             .done(publishAppVersionResponse -> {
                 logger.log(String
                     .format("Successfully published version [%s] for app [%s]. This completes the CREATE for resource type %s.",

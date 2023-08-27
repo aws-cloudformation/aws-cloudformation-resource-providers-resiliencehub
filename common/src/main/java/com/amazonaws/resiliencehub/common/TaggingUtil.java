@@ -22,8 +22,8 @@ public class TaggingUtil {
     private static final String UNTAG_RESOURCE = "UntagResource";
     private static final String LIST_TAGS_FOR_RESOURCE = "ListTagsForResource";
 
-    // ListTagsForResource doesn't support nextToken for pagination
-    public ListTagsForResourceResponse listTagsForResource(
+    // Our ListTagsForResource doesn't support nextToken for pagination
+    public static ListTagsForResourceResponse listTagsForResource(
         final ListTagsForResourceRequest request,
         final ProxyClient<ResiliencehubClient> proxyClient) {
         Validate.notNull(request);
@@ -33,7 +33,7 @@ public class TaggingUtil {
             () -> proxyClient.injectCredentialsAndInvokeV2(request, proxyClient.client()::listTagsForResource));
     }
 
-    public void updateTags(
+    public static void updateTags(
         final String resourceArn,
         final Map<String, String> tags,
         final ProxyClient<ResiliencehubClient> proxyClient) {
@@ -52,7 +52,7 @@ public class TaggingUtil {
         addTags(resourceArn, tagsToAdd, proxyClient);
     }
 
-    private void addTags(
+    private static void addTags(
         final String resourceArn,
         final Map<String, String> tagMap,
         final ProxyClient<ResiliencehubClient> proxyClient) {
@@ -71,7 +71,7 @@ public class TaggingUtil {
         }
     }
 
-    private void removeTags(
+    private static void removeTags(
         final String resourceArn,
         final Set<String> tagKeysToRemove,
         final ProxyClient<ResiliencehubClient> proxyClient) {

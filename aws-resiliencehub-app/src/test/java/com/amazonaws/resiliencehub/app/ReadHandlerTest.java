@@ -10,7 +10,6 @@ import java.time.Duration;
 
 import com.amazonaws.resiliencehub.common.AbstractTestBase;
 import com.amazonaws.resiliencehub.common.Constants;
-import com.amazonaws.resiliencehub.common.TaggingUtil;
 import com.google.common.collect.ImmutableSet;
 
 import software.amazon.awssdk.services.resiliencehub.ResiliencehubClient;
@@ -20,6 +19,7 @@ import software.amazon.awssdk.services.resiliencehub.model.DescribeAppResponse;
 import software.amazon.awssdk.services.resiliencehub.model.DescribeAppVersionTemplateRequest;
 import software.amazon.awssdk.services.resiliencehub.model.DescribeAppVersionTemplateResponse;
 import software.amazon.awssdk.services.resiliencehub.model.ListAppVersionResourceMappingsRequest;
+import software.amazon.awssdk.services.resiliencehub.model.ListAppVersionResourceMappingsResponse;
 import software.amazon.awssdk.services.resiliencehub.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.resiliencehub.model.ListTagsForResourceResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -28,7 +28,6 @@ import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,12 +35,6 @@ public class ReadHandlerTest extends AbstractTestBase {
 
     @Mock
     private ResiliencehubClient sdkClient;
-
-    @Mock
-    private ApiCallsWrapper apiCallsWrapper;
-
-    @Mock
-    private TaggingUtil taggingUtil;
 
     private AmazonWebServicesClientProxy proxy;
     private ProxyClient<ResiliencehubClient> proxyClient;
@@ -51,7 +44,7 @@ public class ReadHandlerTest extends AbstractTestBase {
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
         proxyClient = MOCK_PROXY(proxy, sdkClient);
-        handler = new ReadHandler(apiCallsWrapper, taggingUtil);
+        handler = new ReadHandler();
     }
 
     @Test
@@ -77,13 +70,20 @@ public class ReadHandlerTest extends AbstractTestBase {
             .build();
         final ListAppVersionResourceMappingsRequest resourceMappingsRequest = Translator
             .translateToListAppVersionResourceMappingsRequest(Constants.RELEASE_VERSION, model);
+        final ListAppVersionResourceMappingsResponse listAppVersionResourceMappingsResponse = ListAppVersionResourceMappingsResponse
+            .builder()
+            .resourceMappings(TestDataProvider.CFN_BACKED_SDK_RESOURCE_MAPPING)
+            .build();
 
-        when(apiCallsWrapper.describeApp(eq(describeAppRequest), eq(proxyClient))).thenReturn(describeAppResponse);
-        when(taggingUtil.listTagsForResource(eq(listTagsForResourceRequest), eq(proxyClient))).thenReturn(listTagsForResourceResponse);
-        when(apiCallsWrapper.describeAppVersionTemplate(eq(describeAppVersionTemplateRequest), eq(proxyClient)))
+        when(proxyClient.injectCredentialsAndInvokeV2(describeAppRequest, proxyClient.client()::describeApp))
+            .thenReturn(describeAppResponse);
+        when(proxyClient.injectCredentialsAndInvokeV2(listTagsForResourceRequest, proxyClient.client()::listTagsForResource))
+            .thenReturn(listTagsForResourceResponse);
+        when(proxyClient.injectCredentialsAndInvokeV2(describeAppVersionTemplateRequest, proxyClient.client()::describeAppVersionTemplate))
             .thenReturn(describeAppVersionTemplateResponse);
-        when(apiCallsWrapper.fetchAllResourceMappings(eq(resourceMappingsRequest), eq(proxyClient)))
-            .thenReturn(ImmutableSet.of(TestDataProvider.CFN_BACKED_SDK_RESOURCE_MAPPING));
+        when(proxyClient.injectCredentialsAndInvokeV2(resourceMappingsRequest, proxyClient.client()::listAppVersionResourceMappings))
+            .thenReturn(listAppVersionResourceMappingsResponse);
+
         model.setAppTemplateBody(TestDataProvider.APP_TEMPLATE);
         model.setResourceMappings(
             Translator.toCfnResourceMappings(ImmutableSet.of(TestDataProvider.CFN_BACKED_SDK_RESOURCE_MAPPING)));

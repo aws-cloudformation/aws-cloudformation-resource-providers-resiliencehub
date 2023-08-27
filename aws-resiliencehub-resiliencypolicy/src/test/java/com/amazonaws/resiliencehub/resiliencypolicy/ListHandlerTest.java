@@ -23,7 +23,6 @@ import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,9 +33,6 @@ public class ListHandlerTest extends AbstractTestBase {
     @Mock
     private ResiliencehubClient sdkClient;
 
-    @Mock
-    private ApiCallsWrapper apiCallsWrapper;
-
     private AmazonWebServicesClientProxy proxy;
     private ProxyClient<ResiliencehubClient> proxyClient;
     private ListHandler handler;
@@ -45,7 +41,7 @@ public class ListHandlerTest extends AbstractTestBase {
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
         proxyClient = MOCK_PROXY(proxy, sdkClient);
-        handler = new ListHandler(apiCallsWrapper);
+        handler = new ListHandler();
     }
 
     @Test
@@ -55,7 +51,7 @@ public class ListHandlerTest extends AbstractTestBase {
             .desiredResourceState(model)
             .build();
 
-        final software.amazon.awssdk.services.resiliencehub.model.ResiliencyPolicy resiliencyPolicy =
+        final ResiliencyPolicy resiliencyPolicy =
             TestDataProvider.getResiliencyPolicy();
 
         final ListResiliencyPoliciesRequest listResiliencyPoliciesRequest = Translator.translateToListRequest(null);
@@ -64,7 +60,7 @@ public class ListHandlerTest extends AbstractTestBase {
             .nextToken(NEXT_TOKEN)
             .build();
 
-        when(apiCallsWrapper.listResiliencyPolicies(eq(listResiliencyPoliciesRequest), eq(proxyClient)))
+        when(proxyClient.injectCredentialsAndInvokeV2(listResiliencyPoliciesRequest, proxyClient.client()::listResiliencyPolicies))
             .thenReturn(listResiliencyPoliciesResponse);
 
         assertThat(handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger))
@@ -87,7 +83,7 @@ public class ListHandlerTest extends AbstractTestBase {
             .resiliencyPolicies(ImmutableList.of())
             .build();
 
-        when(apiCallsWrapper.listResiliencyPolicies(eq(listResiliencyPoliciesRequest), eq(proxyClient)))
+        when(proxyClient.injectCredentialsAndInvokeV2(listResiliencyPoliciesRequest, proxyClient.client()::listResiliencyPolicies))
             .thenReturn(listResiliencyPoliciesResponse);
 
         assertThat(handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger))

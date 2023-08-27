@@ -9,14 +9,8 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 public class DeleteHandler extends BaseHandlerStd {
 
-    private Logger logger;
-
     public DeleteHandler() {
         super();
-    }
-
-    public DeleteHandler(final ApiCallsWrapper apiCallsWrapper) {
-        super(apiCallsWrapper);
     }
 
     @Override
@@ -27,15 +21,13 @@ public class DeleteHandler extends BaseHandlerStd {
         final ProxyClient<ResiliencehubClient> proxyClient,
         final Logger logger) {
 
-        this.logger = logger;
-
         // https://github.com/aws-cloudformation/cloudformation-cli-java-plugin/blob/master/src/main/java/software/amazon/cloudformation/proxy/CallChain.java
         return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
             .then(progress ->
                 proxy.initiate("AWS-ResilienceHub-ResiliencyPolicy::Delete", proxyClient, progress.getResourceModel(),
                     progress.getCallbackContext())
                     .translateToServiceRequest(Translator::translateToDeleteRequest)
-                    .makeServiceCall(apiCallsWrapper::deleteResiliencyPolicy)
+                    .makeServiceCall(ApiCallsWrapper::deleteResiliencyPolicy)
                     .done(deleteResiliencyPolicyResponse -> {
                         logger.log(String.format("%s [%s] successfully deleted.", ResourceModel.TYPE_NAME,
                             progress.getResourceModel().getPolicyName()));

@@ -18,7 +18,9 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#tags" title="Tags">Tags</a>" : <i><a href="tags.md">Tags</a></i>,
         "<a href="#apptemplatebody" title="AppTemplateBody">AppTemplateBody</a>" : <i>String</i>,
         "<a href="#resourcemappings" title="ResourceMappings">ResourceMappings</a>" : <i>[ <a href="resourcemapping.md">ResourceMapping</a>, ... ]</i>,
-        "<a href="#appassessmentschedule" title="AppAssessmentSchedule">AppAssessmentSchedule</a>" : <i>String</i>
+        "<a href="#appassessmentschedule" title="AppAssessmentSchedule">AppAssessmentSchedule</a>" : <i>String</i>,
+        "<a href="#permissionmodel" title="PermissionModel">PermissionModel</a>" : <i><a href="permissionmodel.md">PermissionModel</a></i>,
+        "<a href="#eventsubscriptions" title="EventSubscriptions">EventSubscriptions</a>" : <i>[ <a href="eventsubscription.md">EventSubscription</a>, ... ]</i>,
     }
 }
 </pre>
@@ -36,6 +38,9 @@ Properties:
     <a href="#resourcemappings" title="ResourceMappings">ResourceMappings</a>: <i>
       - <a href="resourcemapping.md">ResourceMapping</a></i>
     <a href="#appassessmentschedule" title="AppAssessmentSchedule">AppAssessmentSchedule</a>: <i>String</i>
+    <a href="#permissionmodel" title="PermissionModel">PermissionModel</a>: <i><a href="permissionmodel.md">PermissionModel</a></i>
+    <a href="#eventsubscriptions" title="EventSubscriptions">EventSubscriptions</a>: <i>
+      - <a href="eventsubscription.md">EventSubscription</a></i>
 </pre>
 
 ## Properties
@@ -92,7 +97,7 @@ _Required_: Yes
 
 _Type_: String
 
-_Maximum Length_: <code>5000</code>
+_Maximum Length_: <code>409600</code>
 
 _Pattern_: <code>^[\w\s:,-\.'\/{}\[\]:"]+$</code>
 
@@ -120,6 +125,26 @@ _Allowed Values_: <code>Disabled</code> | <code>Daily</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### PermissionModel
+
+Defines the roles and credentials that AWS Resilience Hub would use while creating the application, importing its resources, and running an assessment.
+
+_Required_: No
+
+_Type_: <a href="permissionmodel.md">PermissionModel</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### EventSubscriptions
+
+The list of events you would like to subscribe and get notification for.
+
+_Required_: No
+
+_Type_: List of <a href="eventsubscription.md">EventSubscription</a>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
 ## Return Values
 
 ### Ref
@@ -135,3 +160,7 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 #### AppArn
 
 Amazon Resource Name (ARN) of the App.
+
+#### DriftStatus
+
+Indicates if compliance drifts (deviations) were detected while running an assessment for your application.

@@ -1,7 +1,5 @@
 package com.amazonaws.resiliencehub.resiliencypolicy;
 
-import org.apache.commons.lang3.Validate;
-
 import com.amazonaws.resiliencehub.common.ClientBuilder;
 
 import software.amazon.awssdk.services.resiliencehub.ResiliencehubClient;
@@ -14,18 +12,6 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 // Placeholder for the functionality that could be shared across Create/Read/Update/Delete/List Handlers
 
 public abstract class BaseHandlerStd extends BaseHandler<CallbackContext> {
-
-  final ApiCallsWrapper apiCallsWrapper;
-
-  public BaseHandlerStd() {
-    this(new ApiCallsWrapper());
-  }
-
-  public BaseHandlerStd(final ApiCallsWrapper apiCallsWrapper) {
-    Validate.notNull(apiCallsWrapper);
-
-    this.apiCallsWrapper = apiCallsWrapper;
-  }
 
   @Override
   public final ProgressEvent<ResourceModel, CallbackContext> handleRequest(

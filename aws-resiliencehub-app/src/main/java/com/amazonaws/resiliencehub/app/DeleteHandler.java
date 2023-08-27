@@ -13,14 +13,8 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 public class DeleteHandler extends BaseHandlerStd {
 
-    private Logger logger;
-
     public DeleteHandler() {
         super();
-    }
-
-    public DeleteHandler(final ApiCallsWrapper apiCallsWrapper) {
-        super(apiCallsWrapper);
     }
 
     @Override
@@ -31,8 +25,6 @@ public class DeleteHandler extends BaseHandlerStd {
         final ProxyClient<ResiliencehubClient> proxyClient,
         final Logger logger) {
 
-        this.logger = logger;
-
         // https://github.com/aws-cloudformation/cloudformation-cli-java-plugin/blob/master/src/main/java/software/amazon/cloudformation/proxy/CallChain.java
 
         return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
@@ -41,7 +33,7 @@ public class DeleteHandler extends BaseHandlerStd {
                 proxy.initiate("AWS-ResilienceHub-App::Delete", proxyClient, progress.getResourceModel(),
                     progress.getCallbackContext())
                     .translateToServiceRequest(Translator::translateToDeleteAppRequest)
-                    .makeServiceCall(apiCallsWrapper::deleteApp)
+                    .makeServiceCall(ApiCallsWrapper::deleteApp)
                     .stabilize(this::stabilizeOnDelete)
                     .done(deleteAppResponse -> {
                         logger.log(String.format("%s [%s] successfully deleted.", ResourceModel.TYPE_NAME,
@@ -60,7 +52,7 @@ public class DeleteHandler extends BaseHandlerStd {
         final CallbackContext context) {
         final ListAppsRequest listAppsRequest = Translator
             .translateToListRequestWithAppArnFilter(model.getAppArn());
-        final ListAppsResponse listAppsResponse = apiCallsWrapper.listApps(listAppsRequest, proxyClient);
+        final ListAppsResponse listAppsResponse = ApiCallsWrapper.listApps(listAppsRequest, proxyClient);
 
         return listAppsResponse.appSummaries().isEmpty();
     }

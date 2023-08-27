@@ -19,7 +19,6 @@ import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,9 +26,6 @@ public class ReadHandlerTest extends AbstractTestBase {
 
     @Mock
     private ResiliencehubClient sdkClient;
-
-    @Mock
-    private ApiCallsWrapper apiCallsWrapper;
 
     private AmazonWebServicesClientProxy proxy;
     private ProxyClient<ResiliencehubClient> proxyClient;
@@ -39,7 +35,7 @@ public class ReadHandlerTest extends AbstractTestBase {
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
         proxyClient = MOCK_PROXY(proxy, sdkClient);
-        handler = new ReadHandler(apiCallsWrapper);
+        handler = new ReadHandler();
     }
 
     @Test
@@ -58,7 +54,7 @@ public class ReadHandlerTest extends AbstractTestBase {
             .policy(resiliencyPolicy)
             .build();
 
-        when(apiCallsWrapper.describeResiliencyPolicy(eq(describeResiliencyPolicyRequest), eq(proxyClient)))
+        when(proxyClient.injectCredentialsAndInvokeV2(describeResiliencyPolicyRequest, proxyClient.client()::describeResiliencyPolicy))
             .thenReturn(describeResiliencyPolicyResponse);
 
         assertThat(handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger))

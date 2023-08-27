@@ -19,7 +19,6 @@ import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,9 +26,6 @@ public class DeleteHandlerTest extends AbstractTestBase {
 
     @Mock
     private ResiliencehubClient sdkClient;
-
-    @Mock
-    private ApiCallsWrapper apiCallsWrapper;
 
     private AmazonWebServicesClientProxy proxy;
     private ProxyClient<ResiliencehubClient> proxyClient;
@@ -39,7 +35,7 @@ public class DeleteHandlerTest extends AbstractTestBase {
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
         proxyClient = MOCK_PROXY(proxy, sdkClient);
-        handler = new DeleteHandler(apiCallsWrapper);
+        handler = new DeleteHandler();
     }
 
     @Test
@@ -52,7 +48,7 @@ public class DeleteHandlerTest extends AbstractTestBase {
         final DeleteResiliencyPolicyRequest deleteResiliencyPolicyRequest = Translator.translateToDeleteRequest(model);
         final DeleteResiliencyPolicyResponse deleteResiliencyPolicyResponse = DeleteResiliencyPolicyResponse.builder().build();
 
-        when(apiCallsWrapper.deleteResiliencyPolicy(eq(deleteResiliencyPolicyRequest), eq(proxyClient)))
+        when(proxyClient.injectCredentialsAndInvokeV2(deleteResiliencyPolicyRequest, proxyClient.client()::deleteResiliencyPolicy))
             .thenReturn(deleteResiliencyPolicyResponse);
 
         assertThat(handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger))

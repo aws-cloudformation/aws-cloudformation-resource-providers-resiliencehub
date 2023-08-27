@@ -28,7 +28,7 @@ public class ApiCallsWrapper {
     private static final String LIST_RESILIENCY_POLICIES = "ListResiliencyPolicies";
     private static final String UPDATE_RESILIENCY_POLICY = "UpdateResiliencyPolicy";
 
-    public CreateResiliencyPolicyResponse createResiliencyPolicy(
+    public static CreateResiliencyPolicyResponse createResiliencyPolicy(
         final CreateResiliencyPolicyRequest createResiliencyPolicyRequest,
         final ProxyClient<ResiliencehubClient> proxyClient) {
         Validate.notNull(createResiliencyPolicyRequest);
@@ -39,7 +39,7 @@ public class ApiCallsWrapper {
                 proxyClient.client()::createResiliencyPolicy));
     }
 
-    public DeleteResiliencyPolicyResponse deleteResiliencyPolicy(
+    public static DeleteResiliencyPolicyResponse deleteResiliencyPolicy(
         final DeleteResiliencyPolicyRequest deleteResiliencyPolicyRequest,
         final ProxyClient<ResiliencehubClient> proxyClient) {
         Validate.notNull(deleteResiliencyPolicyRequest);
@@ -50,7 +50,7 @@ public class ApiCallsWrapper {
                 proxyClient.client()::deleteResiliencyPolicy));
     }
 
-    public DescribeResiliencyPolicyResponse describeResiliencyPolicy(
+    public static DescribeResiliencyPolicyResponse describeResiliencyPolicy(
         final DescribeResiliencyPolicyRequest describeResiliencyPolicyRequest,
         final ProxyClient<ResiliencehubClient> proxyClient) {
         Validate.notNull(describeResiliencyPolicyRequest);
@@ -61,7 +61,7 @@ public class ApiCallsWrapper {
                 proxyClient.client()::describeResiliencyPolicy));
     }
 
-    public ListResiliencyPoliciesResponse listResiliencyPolicies(
+    public static ListResiliencyPoliciesResponse listResiliencyPolicies(
         final ListResiliencyPoliciesRequest listResiliencyPoliciesRequest,
         final ProxyClient<ResiliencehubClient> proxyClient) {
         Validate.notNull(listResiliencyPoliciesRequest);
@@ -72,7 +72,7 @@ public class ApiCallsWrapper {
                 proxyClient.client()::listResiliencyPolicies));
     }
 
-    public UpdateResiliencyPolicyResponse updateResiliencyPolicy(
+    public static UpdateResiliencyPolicyResponse updateResiliencyPolicy(
         final UpdateResiliencyPolicyRequest updateResiliencyPolicyRequest,
         final ProxyClient<ResiliencehubClient> proxyClient) {
         Validate.notNull(updateResiliencyPolicyRequest);

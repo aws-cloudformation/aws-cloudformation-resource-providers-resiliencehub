@@ -23,7 +23,6 @@ import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,9 +33,6 @@ public class ListHandlerTest extends AbstractTestBase {
     @Mock
     private ResiliencehubClient sdkClient;
 
-    @Mock
-    private ApiCallsWrapper apiCallsWrapper;
-
     private AmazonWebServicesClientProxy proxy;
     private ProxyClient<ResiliencehubClient> proxyClient;
     private ListHandler handler;
@@ -45,7 +41,7 @@ public class ListHandlerTest extends AbstractTestBase {
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
         proxyClient = MOCK_PROXY(proxy, sdkClient);
-        handler = new ListHandler(apiCallsWrapper);
+        handler = new ListHandler();
     }
 
     @Test
@@ -63,7 +59,8 @@ public class ListHandlerTest extends AbstractTestBase {
             .desiredResourceState(model)
             .build();
 
-        when(apiCallsWrapper.listApps(eq(listAppsRequest), eq(proxyClient))).thenReturn(listAppsResponse);
+        when(proxyClient.injectCredentialsAndInvokeV2(listAppsRequest, proxyClient.client()::listApps))
+            .thenReturn(listAppsResponse);
 
         assertThat(handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger))
             .isEqualTo(ProgressEvent.builder()
@@ -83,12 +80,13 @@ public class ListHandlerTest extends AbstractTestBase {
             .desiredResourceState(TestDataProvider.resourceModel(appSummary))
             .build();
 
-        when(apiCallsWrapper.listApps(eq(listAppsRequest), eq(proxyClient))).thenReturn(listAppsResponse);
+        when(proxyClient.injectCredentialsAndInvokeV2(listAppsRequest, proxyClient.client()::listApps))
+            .thenReturn(listAppsResponse);
 
         final ProgressEvent<ResourceModel, CallbackContext> response =
             handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
 
-        assertThat(handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger))
+        assertThat(response)
             .isEqualTo(ProgressEvent.builder()
                 .status(OperationStatus.SUCCESS)
                 .resourceModels(Collections.emptyList())
